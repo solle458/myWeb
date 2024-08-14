@@ -1,0 +1,40 @@
+@import url('https://fonts.googleapis.com/css?family=Sawarabi+Mincho');
+
+body{
+    font-family: 'Sawarabi Mincho', sans-serif;
+    background-color: black;
+}
+
+h1{
+    width: 20%;
+    margin: 0;
+    color: white;
+}
+
+h2{
+    width: 15%;
+    margin: 0;
+    color: white;
+}
+
+a.page{
+    margin: 0;
+    color: white;
+    text-decoration: none;
+}
+
+img.icon{
+    margin: 0;
+    width: 25px;
+    height: 25px;
+    object-fit: cover;
+    object-position: center;
+}
+
+img.home{
+    margin: 0;
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    object-position: center;
+}
