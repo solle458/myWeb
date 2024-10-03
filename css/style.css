@@ -31,7 +31,27 @@ img.icon{
     object-position: center;
 }
 
-img.home{
+/* パソコンで見たときは"pc"のclassがついた画像が表示される */
+.pc_home { display: block !important; }
+.sp_home { display: none !important; }
+ 
+/* スマートフォンで見たときは"sp"のclassがついた画像が表示される */
+@media only screen and (max-width: 750px) {
+    .pc_home { display: none !important; }
+    .sp_home { display: block !important; }
+}
+
+img.pc_home{
+    margin: 0;
+    width: 90%;
+    height: auto;
+    object-fit: cover;
+    object-position: center;
+    margin: auto;
+    display: block;
+}
+
+img.sp_home{
     margin: 0;
     width: 90%;
     height: auto;
