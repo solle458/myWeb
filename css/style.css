@@ -1,62 +1,52 @@
-@import url('https://fonts.googleapis.com/css?family=Sawarabi+Mincho');
+@import url("https://fonts.googleapis.com/css?family=Sawarabi+Mincho");
 
-body{
-    font-family: 'Sawarabi Mincho', sans-serif;
-    background-color: black;
+body {
+  font-family: "Sawarabi Mincho", sans-serif;
+  background-color: black;
 }
 
-h1{
-    width: 20%;
-    margin: 0;
-    color: white;
+h1 {
+  width: 20%;
+  margin: 0;
+  color: white;
 }
 
-h2{
-    width: 15%;
-    margin: 0;
-    color: white;
+h2 {
+  width: 15%;
+  margin: 0;
+  color: white;
 }
 
-a.page{
-    margin: 10px;
-    color: white;
-    text-decoration: none;
+a.page {
+  margin: 10px;
+  color: white;
+  text-decoration: none;
 }
 
-img.icon{
-    margin-left: 10px;
-    width: 25px;
-    height: 25px;
-    object-fit: cover;
-    object-position: center;
+img.icon {
+  margin-left: 10px;
+  width: 25px;
+  height: 25px;
+  object-fit: cover;
+  object-position: center;
 }
 
-/* パソコンで見たときは"pc"のclassがついた画像が表示される */
-.pc_home { display: block !important; }
-.sp_home { display: none !important; }
- 
-/* スマートフォンで見たときは"sp"のclassがついた画像が表示される */
-@media only screen and (max-width: 750px) {
-    .pc_home { display: none !important; }
-    .sp_home { display: block !important; }
+img.pc_home {
+  margin: 0;
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  object-position: center;
+  margin: auto;
+  display: block;
 }
 
-img.pc_home{
-    margin: 0;
-    max-width: 100%;
-    height: auto;
-    object-fit: cover;
-    object-position: center;
-    margin: auto;
-    display: block;
-}
-
-img.sp_home{
-    margin: 0;
-    width: 90%;
-    height: auto;
-    object-fit: cover;
-    object-position: center;
-    margin: auto;
-    display: block;
+img.sp_home {
+  margin: 0;
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  object-position: center;
+  margin: auto;
+  display: block;
 }
