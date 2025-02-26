@@ -1,0 +1,3 @@
+/portfolio/node_modules
+.gitignore
+next-env.d.ts
