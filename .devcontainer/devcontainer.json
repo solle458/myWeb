@@ -12,6 +12,26 @@
 		"ghcr.io/devcontainers/features/git-lfs:1": {},
 		"ghcr.io/devcontainers/features/github-cli:1": {},
 		"ghcr.io/devcontainers/features/node:1": {}
+	},
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"formulahendry.auto-rename-tag",
+				"hediet.vscode-drawio",
+				"rodrigovallades.es7-react-js-snippets",
+				"xabikos.JavaScriptSnippets",
+				"ms-azuretools.vscode-docker",
+				"golang.go",
+				"ecmel.vscode-html-css",
+				"ritwickdey.LiveServer",
+				"Oracle.mysql-shell-for-vs-code",
+				"ionutvmi.path-autocomplete",
+				"Postman.postman-for-vscode",
+				"alexcvzz.vscode-sqlite",
+				"ms-vscode.vscode-typescript-next",
+				"infeng.vscode-react-typescript"
+			]
+		}
 	}
 
 	// Features to add to the dev container. More info: https://containers.dev/features.
