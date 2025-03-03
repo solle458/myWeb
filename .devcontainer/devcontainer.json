@@ -29,7 +29,9 @@
 				"Postman.postman-for-vscode",
 				"alexcvzz.vscode-sqlite",
 				"ms-vscode.vscode-typescript-next",
-				"infeng.vscode-react-typescript"
+				"infeng.vscode-react-typescript",
+				"GitHub.copilot",
+				"GitHub.copilot-chat"
 			]
 		}
 	}
