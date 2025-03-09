@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
+import Image from 'next/image';
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -31,23 +32,20 @@ const Header = () => {
   };
 
   return (
-    <header className="bg-gray-800 text-white">
+    <header className="bg-gradient-to-r from-blue-800 via-purple-800 to-indigo-900 text-white shadow-lg">
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center py-4">
           {/* Logo */}
           <div className="text-xl font-bold">
-            <a href="/" className="flex items-center">
-              {/* You can add your logo here */}
-              <span>Your Portfolio</span>
-            </a>
+          <Image src="/images/logo3.png" alt="Portfolio Logo" className="hover:text-blue-400 transition duration-300" width={50} height={50} />
           </div>
 
           {/* Desktop Navigation */}
           <nav className={`hidden md:flex space-x-8`}>
-            <a href="#about" className="hover:text-blue-400 transition duration-300">About</a>
-            <a href="#projects" className="hover:text-blue-400 transition duration-300">Projects</a>
-            <a href="#skills" className="hover:text-blue-400 transition duration-300">Skills</a>
-            <a href="#contact" className="hover:text-blue-400 transition duration-300">Contact</a>
+            <a href="#about" className="hover:text-blue-300 transition duration-300">About</a>
+            <a href="#projects" className="hover:text-blue-300 transition duration-300">Projects</a>
+            <a href="#skills" className="hover:text-blue-300 transition duration-300">Skills</a>
+            <a href="#contact" className="hover:text-blue-300 transition duration-300">Contact</a>
           </nav>
 
           {/* Hamburger Menu Button */}
@@ -67,28 +65,28 @@ const Header = () => {
           <nav className="flex flex-col space-y-4 py-4">
             <a 
               href="#about" 
-              className="hover:text-blue-400 transition duration-300"
+              className="hover:text-blue-300 transition duration-300"
               onClick={() => setIsOpen(false)}
             >
               About
             </a>
             <a 
               href="#projects" 
-              className="hover:text-blue-400 transition duration-300"
+              className="hover:text-blue-300 transition duration-300"
               onClick={() => setIsOpen(false)}
             >
               Projects
             </a>
             <a 
               href="#skills" 
-              className="hover:text-blue-400 transition duration-300"
+              className="hover:text-blue-300 transition duration-300"
               onClick={() => setIsOpen(false)}
             >
               Skills
             </a>
             <a 
               href="#contact" 
-              className="hover:text-blue-400 transition duration-300"
+              className="hover:text-blue-300 transition duration-300"
               onClick={() => setIsOpen(false)}
             >
               Contact
