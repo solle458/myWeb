@@ -46,6 +46,8 @@ const Header = () => {
             <a href="#projects" className="hover:text-blue-300 transition duration-300">Projects</a>
             <a href="#skills" className="hover:text-blue-300 transition duration-300">Skills</a>
             <a href="#contact" className="hover:text-blue-300 transition duration-300">Contact</a>
+            <a href="#blog" className="hover:text-blue-300 transition duration-300">Blog</a>
+            <a href="#photo" className="hover:text-blue-300 trainsition duration-300">Photo</a>
           </nav>
 
           {/* Hamburger Menu Button */}
