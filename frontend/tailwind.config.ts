@@ -9,7 +9,15 @@ export default {
   ],
   theme: {
   	extend: {
+		fontFamily: {
+			'montserrat': ['Montserrat', 'sans-serif'],
+			'sans': ['sans-serif'],
+		},
   		colors: {
+			'kissa-dark': '#24211b',
+        	'kissa-yellow': '#f4dd64',
+        	'kissa-yellow-dark': '#d8b500',
+        	'kissa-menu-bg': '#736E62',
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
   			card: {
@@ -55,7 +63,14 @@ export default {
   			lg: 'var(--radius)',
   			md: 'calc(var(--radius) - 2px)',
   			sm: 'calc(var(--radius) - 4px)'
-  		}
+  		},
+		height: {
+			'header': '110px',
+			'header-mobile': '50px',
+		},
+		boxShadow: {
+			'header': '0 3px 6px rgba(0, 0, 0, 0.1)',
+		},
   	}
   },
   plugins: [import("tailwindcss-animate")],

@@ -119,3 +119,15 @@
     @apply bg-background text-foreground;
   }
 }
+
+@layer base {
+  body {
+    @apply font-sans text-base text-black bg-white;
+  }
+}
+
+@layer components {
+  .site-menu li a {
+    @apply font-montserrat font-bold;
+  }
+}
