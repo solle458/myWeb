@@ -7,133 +7,225 @@ import Image from 'next/image';
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [hoveredItem, setHoveredItem] = useState(null);
+  const [isScrolled, setIsScrolled] = useState(false);
 
-  // Check if viewport is mobile size
+  // Check if viewport is mobile size and handle scroll
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth < 768);
       if (window.innerWidth >= 768) {
         setIsOpen(false);
+        document.body.style.overflow = ''; // Reset body overflow when resized to desktop
       }
     };
 
-    // Set initial state
-    handleResize();
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 10);
+    };
 
-    // Add event listener
+    // Set initial states
+    handleResize();
+    handleScroll();
+
+    // Add event listeners
     window.addEventListener('resize', handleResize);
+    window.addEventListener('scroll', handleScroll);
 
     // Cleanup
-    return () => window.removeEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('scroll', handleScroll);
+      document.body.style.overflow = ''; // Reset on unmount
+    };
   }, []);
 
-  // Toggle menu
+  // Toggle menu with body lock for mobile
   const toggleMenu = () => {
     setIsOpen(!isOpen);
+    // Prevent background scrolling when menu is open (mobile only)
+    if (isMobile) {
+      if (!isOpen) {
+        document.body.style.overflow = 'hidden';
+      } else {
+        document.body.style.overflow = '';
+      }
+    }
   };
 
+  // Menu items with their routes
+  const menuItems = [
+    { name: 'ABOUT', href: '/about' },
+    { name: 'PROJECTS', href: '/projects' },
+    { name: 'SKILLS', href: '/skills' },
+    { name: 'CONTACT', href: '/contact' },
+    { name: 'BLOG', href: '/blog' },
+    { name: 'PHOTO', href: '/photo' }
+  ];
+
   return (
-    <header className="md:static fixed top-0 left-0 right-0 bg-white md:h-header h-header-mobile z-10 md:shadow-none">
-      <div className="max-w-7xl h-full mx-auto md:px-10 px-5 flex justify-between items-center relative">
-        <Link href="/" className="block md:w-[170px] w-[100px]">
-          <Image
-            src="/images/common/logo-header.png"
-            alt="KISSA"
-            width={170}
-            height={50}
-            priority
+    <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+      isScrolled ? 'bg-white bg-opacity-90 shadow-md' : 'bg-white/50'
+    }`}>
+      <div className="max-w-7xl h-header-mobile md:h-header mx-auto md:px-10 px-5 flex justify-between items-center relative">
+        {/* Logo/Title with hover effect */}
+        <Link href="/" className="block md:w-[250px] w-[180px] relative">
+          <div 
+            className={`absolute rounded-full w-48 h-16 transition-all duration-700 ${
+              hoveredItem === 'logo' ? 'opacity-70 scale-100' : 'opacity-0 scale-50'
+            }`}
+            style={{
+              background: 'radial-gradient(circle, rgba(0,150,255,0.8) 0%, rgba(255,255,255,0) 70%)',
+              filter: hoveredItem === 'logo' ? 'blur(10px)' : 'blur(5px)',
+              transform: `translate(-65%, -50%) ${hoveredItem === 'logo' ? 'scale(2.2)' : 'scale(0.8)'}`,
+              left: '50%',
+              top: '50%',
+              pointerEvents: 'none',
+            }}
           />
+          <h1 
+            className="font-montserrat font-bold text-2xl text-white transition-all duration-300"
+            style={{
+              textShadow: hoveredItem === 'logo' 
+                ? "2px 2px 12px #4b2c14, 0 0 10px rgba(0,150,255,0.3)" 
+                : "1px 1px 10px #4b2c14",
+            }}
+            onMouseEnter={() => setHoveredItem('logo')}
+            onMouseLeave={() => setHoveredItem(null)}
+          >
+            MIYAKI SHOGO
+          </h1>
         </Link>
 
+        {/* Modern hamburger menu button - mobile only */}
         <button
-            onClick={toggleMenu}
-            className="md:hidden flex flex-col justify-center items-center"
-            aria-label="Toggle menu"
-          >
-            <span className={`block w-6 h-0.5 bg-black mb-1.5 transition-transform duration-300 ${isOpen ? 'rotate-45 translate-y-2' : ''}`}></span>
-            <span className={`block w-6 h-0.5 bg-black mb-1.5 transition-opacity duration-300 ${isOpen ? 'opacity-0' : 'opacity-100'}`}></span>
-            <span className={`block w-6 h-0.5 bg-black transition-transform duration-300 ${isOpen ? '-rotate-45 -translate-y-2' : ''}`}></span>
-          </button>
+          onClick={toggleMenu}
+          className="relative z-50 md:hidden flex flex-col justify-center items-center w-10 h-10 focus:outline-none"
+          aria-label="Toggle menu"
+        >
+          <div className="relative w-6 h-6">
+            <span 
+              className={`absolute h-0.5 w-6 bg-black rounded-full transform transition-all duration-300 ease-in-out ${
+                isOpen ? 'rotate-45 top-3' : 'rotate-0 top-1'
+              }`}
+            />
+            <span 
+              className={`absolute h-0.5 w-6 bg-black rounded-full top-3 transform transition-all duration-300 ease-in-out ${
+                isOpen ? 'opacity-0 -translate-x-2' : 'opacity-100 translate-x-0'
+              }`}
+            />
+            <span 
+              className={`absolute h-0.5 w-6 bg-black rounded-full transform transition-all duration-300 ease-in-out ${
+                isOpen ? '-rotate-45 top-3' : 'rotate-0 top-5'
+              }`}
+            />
+          </div>
+        </button>
 
-        <div className={`md:block ${isOpen ? 'block' : 'hidden'} md:static absolute top-full left-0 right-0 md:bg-transparent bg-kissa-menu-bg md:text-black text-white md:p-0 pt-[30px] pb-[50px]`}>
-          <nav className="site-menu">
-            <ul className="md:flex block md:text-left text-center">
-              <li className="md:mx-5 md:mt-0 mt-5 transform transition hover:-translate-y-1 motion-reduce:transition-none motion-reduce:hover:transform-none"><Link href="/about">ABOUT</Link></li>
-              <li className="md:mx-5 md:mt-0 mt-5 transform transition hover:-translate-y-1 motion-reduce:transition-none motion-reduce:hover:transform-none"><Link href="/projects">PROJECTS</Link></li>
-              <li className="md:mx-5 md:mt-0 mt-5 transform transition hover:-translate-y-1 motion-reduce:transition-none motion-reduce:hover:transform-none"><Link href="/skills">SKILLS</Link></li>
-              <li className="md:mx-5 md:mt-0 mt-5 transform transition hover:-translate-y-1 motion-reduce:transition-none motion-reduce:hover:transform-none"><Link href="/contact">CONTACT</Link></li>
-              <li className="md:mx-5 md:mt-0 mt-5 transform transition hover:-translate-y-1 motion-reduce:transition-none motion-reduce:hover:transform-none"><Link href="/blog">BLOG</Link></li>
-              <li className="md:mx-5 md:mt-0 mt-5 transform transition hover:-translate-y-1 motion-reduce:transition-none motion-reduce:hover:transform-none"><Link href="/photo">PHOTO</Link></li>
+        {/* Desktop navigation - always visible on desktop */}
+        <nav className="hidden md:block">
+          <ul className="flex">
+            {menuItems.map((item, index) => (
+              <li 
+                key={index} 
+                className="mx-5 relative"
+                onMouseEnter={() => setHoveredItem(`menu-${index}`)}
+                onMouseLeave={() => setHoveredItem(null)}
+              >
+                {/* Gradient effect for each menu item */}
+                <div 
+                  className={`absolute rounded-full w-32 h-12 transition-all duration-500 ${
+                    hoveredItem === `menu-${index}` ? 'opacity-70 scale-100' : 'opacity-0 scale-50'
+                  }`}
+                  style={{
+                    background: 'radial-gradient(circle, rgba(0,150,255,0.8) 0%, rgba(255,255,255,0) 70%)',
+                    filter: hoveredItem === `menu-${index}` ? 'blur(8px)' : 'blur(3px)',
+                    transform: `translate(-50%, -50%) ${hoveredItem === `menu-${index}` ? 'scale(2.2)' : 'scale(0.8)'}`,
+                    left: '50%',
+                    top: '50%',
+                    pointerEvents: 'none',
+                  }}
+                />
+                <Link 
+                  href={item.href}
+                  className="relative z-10 py-2 px-3 transition-all duration-300 font-bold"
+                  style={{
+                    textShadow: hoveredItem === `menu-${index}` 
+                      ? '0 0 8px rgba(0,150,255,0.3)'
+                      : 'none',
+                    color: 'black',
+                  }}
+                >
+                  {item.name}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </nav>
+
+        {/* Mobile menu overlay - only visible on mobile when open */}
+        <div 
+          className={`md:hidden fixed inset-0 bg-gradient-to-br from-white to-blue-50 z-40 transition-all duration-500 ease-in-out ${
+            isOpen ? 'opacity-100 visible' : 'opacity-0 invisible'
+          }`}
+          style={{
+            clipPath: isOpen 
+              ? 'circle(150% at top right)' 
+              : 'circle(0% at calc(100% - 20px) 20px)',
+            transition: 'clip-path 0.5s cubic-bezier(0.77, 0, 0.175, 1), opacity 0.4s ease-in-out, visibility 0.4s ease-in-out',
+          }}
+        >
+          <nav className="h-full flex items-center justify-center">
+            <ul className="text-center">
+              {menuItems.map((item, index) => (
+                <li 
+                  key={index} 
+                  className="my-8 relative"
+                  onMouseEnter={() => setHoveredItem(`menu-${index}`)}
+                  onMouseLeave={() => setHoveredItem(null)}
+                  style={{
+                    transform: isOpen ? 'translateY(0)' : 'translateY(20px)',
+                    opacity: isOpen ? 1 : 0,
+                    transition: `transform 0.4s ease ${0.1 + index * 0.1}s, opacity 0.4s ease ${0.1 + index * 0.1}s`,
+                    transitionDelay: isOpen ? `${0.1 + index * 0.1}s` : '0s',
+                  }}
+                >
+                  {/* Gradient effect for each menu item */}
+                  <div 
+                    className={`absolute rounded-full w-32 h-12 transition-all duration-500 ${
+                      hoveredItem === `menu-${index}` ? 'opacity-70 scale-100' : 'opacity-0 scale-50'
+                    }`}
+                    style={{
+                      background: 'radial-gradient(circle, rgba(0,150,255,0.8) 0%, rgba(255,255,255,0) 70%)',
+                      filter: hoveredItem === `menu-${index}` ? 'blur(8px)' : 'blur(3px)',
+                      transform: `translate(-50%, -50%) ${hoveredItem === `menu-${index}` ? 'scale(2.2)' : 'scale(0.8)'}`,
+                      left: '50%',
+                      top: '50%',
+                      pointerEvents: 'none',
+                    }}
+                  />
+                  <Link 
+                    href={item.href}
+                    className={`relative z-10 py-2 px-3 text-lg transition-all duration-300 ${
+                      hoveredItem === `menu-${index}` ? 'font-bold' : ''
+                    }`}
+                    style={{
+                      textShadow: hoveredItem === `menu-${index}` 
+                        ? '0 0 8px rgba(0,150,255,0.5)'
+                        : 'none',
+                      color: 'black',
+                    }}
+                    onClick={toggleMenu}
+                  >
+                    {item.name}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </nav>
         </div>
       </div>
     </header>
-    // <header className="text-black">
-    //   <div className="container mx-auto px-4">
-    //     <div className="flex justify-between items-center py-4">
-    //       {/* Logo */}
-    //       <div className="text-xl font-bold">
-    //       <Image src="/images/logo3.png" alt="Portfolio Logo" className="hover:text-blue-400 transition duration-300" width={50} height={50} />
-    //       </div>
-
-    //       {/* Desktop Navigation */}
-    //       <nav className={`hidden md:flex space-x-8`}>
-    //         <a href="#about" className="hover:text-blue-300 transition duration-300">About</a>
-    //         <a href="#projects" className="hover:text-blue-300 transition duration-300">Projects</a>
-    //         <a href="#skills" className="hover:text-blue-300 transition duration-300">Skills</a>
-    //         <a href="#contact" className="hover:text-blue-300 transition duration-300">Contact</a>
-    //         <a href="#blog" className="hover:text-blue-300 transition duration-300">Blog</a>
-    //         <a href="#photo" className="hover:text-blue-300 transition duration-300">Photo</a>
-    //       </nav>
-
-    //       {/* Hamburger Menu Button */}
-    //       <button 
-    //         onClick={toggleMenu} 
-    //         className="md:hidden flex flex-col justify-center items-center"
-    //         aria-label="Toggle menu"
-    //       >
-    //         <span className={`block w-6 h-0.5 bg-black mb-1.5 transition-transform duration-300 ${isOpen ? 'rotate-45 translate-y-2' : ''}`}></span>
-    //         <span className={`block w-6 h-0.5 bg-black mb-1.5 transition-opacity duration-300 ${isOpen ? 'opacity-0' : 'opacity-100'}`}></span>
-    //         <span className={`block w-6 h-0.5 bg-black transition-transform duration-300 ${isOpen ? '-rotate-45 -translate-y-2' : ''}`}></span>
-    //       </button>
-    //     </div>
-
-    //     {/* Mobile Menu */}
-    //     <div className={`md:hidden ${isOpen ? 'block' : 'hidden'}`}>
-    //       <nav className="flex flex-col space-y-4 py-4">
-    //         <a 
-    //           href="#about" 
-    //           className="hover:text-blue-300 transition duration-300"
-    //           onClick={() => setIsOpen(false)}
-    //         >
-    //           About
-    //         </a>
-    //         <a 
-    //           href="#projects" 
-    //           className="hover:text-blue-300 transition duration-300"
-    //           onClick={() => setIsOpen(false)}
-    //         >
-    //           Projects
-    //         </a>
-    //         <a 
-    //           href="#skills" 
-    //           className="hover:text-blue-300 transition duration-300"
-    //           onClick={() => setIsOpen(false)}
-    //         >
-    //           Skills
-    //         </a>
-    //         <a 
-    //           href="#contact" 
-    //           className="hover:text-blue-300 transition duration-300"
-    //           onClick={() => setIsOpen(false)}
-    //         >
-    //           Contact
-    //         </a>
-    //       </nav>
-    //     </div>
-    //   </div>
-    // </header>
   );
 };
 
