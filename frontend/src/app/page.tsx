@@ -17,6 +17,9 @@ const images = [
   "/images/light3.jpg",
   "/images/light4.jpg",
   "/images/light5.jpg",
+  "/images/light6.jpg",
+  "/images/light7.jpg",
+  "/images/light8.jpg",
 ];
 
 export default function Home() {
