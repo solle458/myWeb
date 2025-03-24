@@ -22,7 +22,7 @@ export default function Projects() {
   const containerRef = useRef<HTMLDivElement>(null);
 
   // 装飾用画像
-  const backgroundImage = "/images/light4.jpg";
+  const backgroundImage = "/images/pc/light4.JPG";
 
   // プロジェクトデータ
   const projects: Project[] = [
@@ -30,35 +30,10 @@ export default function Projects() {
       id: 'project1',
       title: 'ポートフォリオウェブサイト',
       description: 'Next.jsとTailwind CSSを使用した個人ポートフォリオサイト。アニメーションとインタラクティブな要素を取り入れ、レスポンシブデザインを実装。',
-      image: '/images/dark1.jpg',
+      image: '/images/mobile/dark4.JPG',
       technologies: ['Next.js', 'React', 'TypeScript', 'Tailwind CSS'],
-      url: 'https://example.com',
-      github: 'https://github.com/example/portfolio'
-    },
-    {
-      id: 'project2',
-      title: 'ECサイト',
-      description: 'オンラインショッピングプラットフォーム。ユーザー認証、商品検索、カート機能、決済処理を実装。',
-      image: '/images/dark2.jpg',
-      technologies: ['React', 'Node.js', 'Express', 'MongoDB', 'Stripe API'],
-      url: 'https://example-shop.com',
-      github: 'https://github.com/example/ec-site'
-    },
-    {
-      id: 'project3',
-      title: 'タスク管理アプリ',
-      description: 'シンプルで使いやすいタスク管理アプリケーション。タスクの作成、編集、削除、並び替え、フィルタリング機能を搭載。',
-      image: '/images/dark4.jpg',
-      technologies: ['Vue.js', 'Vuex', 'Firebase', 'CSS Grid'],
-      github: 'https://github.com/example/task-app'
-    },
-    {
-      id: 'project4',
-      title: '天気予報アプリ',
-      description: '現在地または指定した場所の天気予報を表示するアプリ。5日間の予報、温度、湿度、風速などの詳細情報を提供。',
-      image: '/images/dark5.jpg',
-      technologies: ['React Native', 'Redux', 'OpenWeather API', 'Geolocation API'],
-      url: 'https://weather-app-example.com',
+      url: 'https://portfolio-omega-topaz-67.vercel.app/',
+      github: 'https://github.com/solle458/myWeb/tree/main/frontend'
     }
   ];
 

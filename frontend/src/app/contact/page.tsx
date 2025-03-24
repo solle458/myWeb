@@ -26,7 +26,7 @@ export default function Contact() {
   const formRef = useRef<HTMLFormElement>(null);
 
   // 装飾用画像
-  const backgroundImage = "/images/dark1.jpg";
+  const backgroundImage = "/images/pc/dark1.JPG";
 
   // フォーム入力の検証
   const validateName = (name: string) => name.trim().length >= 2;

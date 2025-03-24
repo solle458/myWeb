@@ -99,7 +99,7 @@ export default function About() {
               onMouseLeave={() => setHoveredSection(null)}
             >
               <Image
-                src="/images/dark8.jpg" // Make sure to create this placeholder
+                src="/images/mobile/dark4.JPG" // Make sure to create this placeholder
                 alt="Miyaki Shogo"
                 fill
                 style={{ objectFit: 'cover' }}
