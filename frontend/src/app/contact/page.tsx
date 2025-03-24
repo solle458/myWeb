@@ -10,6 +10,13 @@ interface FieldState {
   isValid: boolean;
 }
 
+// フォームデータの型
+interface FormData {
+  name: string;
+  email: string;
+  message: string;
+}
+
 export default function Contact() {
   // フォームフィールドの状態
   const [nameField, setNameField] = useState<FieldState>({ value: '', isTouched: false, isValid: false });
@@ -46,25 +53,63 @@ export default function Contact() {
     if (validateName(nameField.value) && validateEmail(emailField.value) && validateMessage(messageField.value)) {
       setIsSubmitting(true);
       
-      // 実際の実装ではここでAPIリクエストを行います
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      // 送信成功時の処理
-      setSubmitResult({ success: true, message: 'お問い合わせありがとうございます。近日中にご連絡いたします。' });
-      setIsSubmitting(false);
-      
-      // フォームをリセット
-      if (formRef.current) {
-        formRef.current.reset();
-        setNameField({ value: '', isTouched: false, isValid: false });
-        setEmailField({ value: '', isTouched: false, isValid: false });
-        setMessageField({ value: '', isTouched: false, isValid: false });
+      try {
+        // フォームデータの作成
+        const formData: FormData = {
+          name: nameField.value,
+          email: emailField.value,
+          message: messageField.value
+        };
+        
+        // APIエンドポイントにPOSTリクエストを送信
+        const response = await fetch('/api/contact', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(formData),
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+          // 送信成功時の処理
+          setSubmitResult({ 
+            success: true, 
+            message: '現在工事中のため、お問い合わせは受け付けておりません。' 
+          });
+          
+          // フォームをリセット
+          if (formRef.current) {
+            formRef.current.reset();
+            setNameField({ value: '', isTouched: false, isValid: false });
+            setEmailField({ value: '', isTouched: false, isValid: false });
+            setMessageField({ value: '', isTouched: false, isValid: false });
+          }
+        } else {
+          // エラーレスポンスの処理
+          setSubmitResult({ 
+            success: false, 
+            message: data.message || 'エラーが発生しました。しばらくしてからもう一度お試しください。' 
+          });
+        }
+      } catch (error) {
+        // 通信エラーの処理
+        console.error('Contact form submission error:', error);
+        setSubmitResult({ 
+          success: false, 
+          message: '通信エラーが発生しました。インターネット接続を確認して再度お試しください。' 
+        });
+      } finally {
+        setIsSubmitting(false);
+        
+        // 成功時のみ、5秒後にメッセージをクリア
+        if (submitResult?.success) {
+          setTimeout(() => {
+            setSubmitResult(null);
+          }, 5000);
+        }
       }
-      
-      // 3秒後に成功メッセージをクリア
-      setTimeout(() => {
-        setSubmitResult(null);
-      }, 5000);
     }
   };
 
@@ -204,8 +249,7 @@ export default function Contact() {
                 お問い合わせ
               </h2>
               <p className="text-gray-700 mb-8 leading-relaxed">
-                ご質問、プロジェクトのご相談、お仕事のご依頼など、お気軽にお問い合わせください。
-                フォームからのメッセージをお送りいただくか、以下の連絡先までご連絡ください。
+                お気軽にお問い合わせください。
               </p>
             </div>
 
@@ -261,15 +305,15 @@ export default function Contact() {
                       <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />                      </svg>
                     </a>
-                    <a href="#" className="text-blue-500 hover:text-blue-700">
+                    <a href="https://www.linkedin.com/in/%E7%AC%99%E4%BC%8D-%E5%AE%AE%E6%9C%A8-98009331b/" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:text-blue-700">
                       <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm-2 16h-2v-6h2v6zm-1-6.891c-.607 0-1.1-.496-1.1-1.109 0-.612.492-1.109 1.1-1.109s1.1.497 1.1 1.109c0 .613-.493 1.109-1.1 1.109zm8 6.891h-2v-3.158c0-.526-.394-1.053-.938-1.053s-1.062.421-1.062 1.053v3.158h-2v-6h2v1.162c.506-.854 1.521-1.22 2.353-1.22 1.632 0 2.647 1.059 2.647 3.158v2.9z" />
                       </svg>
                     </a>
-                    <a href="#" className="text-blue-500 hover:text-blue-700">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm-2 16.057v-3.057h2v3.057c-2.186 0-2 0-2 0zm10.442-8.468c-.462-.617-1.084-.812-1.879-.855-2.259-.124-4.494-.124-6.75-.124-2.256 0-4.491 0-6.75.124-.795.043-1.417.238-1.879.855-.475.631-.517 1.707-.517 2.411v.003c0 .704.042 1.78.517 2.41.462.618 1.084.813 1.879.855 2.259.124 4.494.124 6.75.124 2.256 0 4.491 0 6.75-.124.795-.042 1.417-.237 1.879-.855.475-.63.517-1.706.517-2.41v-.003c0-.704-.042-1.78-.517-2.411zm-8.442.465h-2v1.891h-1v-1.891h-2v-1.057h5v1.057zm1 5.057l-3-3.39v3.39h-1v-5h1l3 3.39v-3.39h1v5h-1z" />
-                      </svg>
+                    <a href="https://github.com/solle458" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:text-blue-700">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                    </svg>
                     </a>
                   </div>
                 </div>
