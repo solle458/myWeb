@@ -32,7 +32,7 @@ export default function Projects() {
       description: 'Next.jsとTailwind CSSを使用した個人ポートフォリオサイト。アニメーションとインタラクティブな要素を取り入れ、レスポンシブデザインを実装。',
       image: '/images/mobile/dark4.JPG',
       technologies: ['Next.js', 'React', 'TypeScript', 'Tailwind CSS'],
-      url: 'https://portfolio-omega-topaz-67.vercel.app/',
+      url: 'https://solle.vercel.app/',
       github: 'https://github.com/solle458/myWeb/tree/main/frontend'
     }
   ];
