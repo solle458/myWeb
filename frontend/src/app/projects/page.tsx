@@ -147,7 +147,8 @@ export default function Projects() {
             </h2>
             <p className="text-gray-700 mb-8 leading-relaxed max-w-3xl">
               これまでに取り組んだプロジェクトの一部をご紹介します。
-              Webアプリケーション、モバイルアプリ、UIデザインなど、様々な種類のプロジェクトに挑戦してきました。
+              普段は開発少なめのためプロジェクトが少なめです。
+              Webアプリケーション、UIデザインなど。
             </p>
           </div>
         </div>
