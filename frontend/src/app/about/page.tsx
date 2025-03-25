@@ -30,7 +30,7 @@ export default function About() {
       "IOORという競技プログラミングサークルの運営をしており、コンテストの開催や勉強会の企画を行っています。他にC.A.C.というデジタル創作系の部活や写真部に所属し活動しています。",
       "趣味は旅行とプログラミングで、旅行先の写真を撮るのが好きです。大人数の旅行も一人旅も両方します。普段は競技プログラミングをしています。"
     ],
-    skills: ["C/C++", "Python3", "GO", "React", "Next.js", "TypeScript", "CSS", "Tailwind CSS", "Node.js", "Photography"],
+    skills: ["C/C++", "Python3", "GO", "Docker", "React", "Next.js", "TypeScript", "CSS", "Tailwind CSS", "Node.js", "Photography"],
     education: [
       {
         degree: "京都産業大学",

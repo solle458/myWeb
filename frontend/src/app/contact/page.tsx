@@ -15,7 +15,7 @@ export default function Contact() {
   const [nameField, setNameField] = useState<FieldState>({ value: '', isTouched: false, isValid: false });
   const [emailField, setEmailField] = useState<FieldState>({ value: '', isTouched: false, isValid: false });
   const [messageField, setMessageField] = useState<FieldState>({ value: '', isTouched: false, isValid: false });
-  
+
   // UI表示状態
   const [isVisible, setIsVisible] = useState(false);
   const [hoveredElement, setHoveredElement] = useState<string | null>(null);
@@ -26,7 +26,7 @@ export default function Contact() {
   const formRef = useRef<HTMLFormElement>(null);
 
   // 装飾用画像
-  const backgroundImage = "/images/pc/dark1.jpg";
+  const backgroundImage = "/images/pc/dark1.JPG";
 
   // フォーム入力の検証
   const validateName = (name: string) => name.trim().length >= 2;
