@@ -11,6 +11,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/joho/godotenv"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
 	"golang.org/x/text/encoding/japanese"
@@ -18,6 +19,19 @@ import (
 	"google.golang.org/api/gmail/v1"
 	"google.golang.org/api/option"
 )
+
+type ContactForm struct {
+	Name    string `json:"name"`
+	Email   string `json:"email"`
+	Message string `json:"message"`
+}
+
+func loadEnv() {
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+}
 
 func getClient(config *oauth2.Config) *http.Client {
 	tokFile := "token.json"
@@ -67,7 +81,33 @@ func saveToken(path string, token *oauth2.Token) {
 	json.NewEncoder(f).Encode(token)
 }
 
-func main() {
+func sendEmail(replyTo string, name string, body string, srv *gmail.Service) error {
+	to := os.Getenv("TO_EMAIL")
+	subject := "お問い合わせがありました"
+
+	msgStr := "From: 'me'\r\n" +
+		"reply-to: " + replyTo + "\r\n" +
+		"To: " + to + "\r\n" +
+		"Subject: " + name + subject + "\r\n" +
+		"\r\n" + body
+	reader := strings.NewReader(msgStr)
+	transformer := japanese.ISO2022JP.NewEncoder()
+	msgISO2022JP, err := io.ReadAll(transform.NewReader(reader, transformer))
+	if err != nil {
+		return fmt.Errorf("unable to convert to ISO2022JP: %v", err)
+	}
+	msg := []byte(msgISO2022JP)
+	message := gmail.Message{}
+	message.Raw = base64.StdEncoding.EncodeToString(msg)
+	_, err = srv.Users.Messages.Send("me", &message).Do()
+	if err != nil {
+		return fmt.Errorf("%v", err)
+	}
+
+	return nil
+}
+
+func contactHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := context.Background()
 	b, err := os.ReadFile("credentials.json")
 	if err != nil {
@@ -84,23 +124,50 @@ func main() {
 		log.Fatalf("Unable to retrieve Gmail client: %v", err)
 	}
 	fmt.Println("Created Gmail service", srv)
-	//追記
-	msgStr := "From: 'me'\r\n" +
-		"reply-to: g2354558@cc.kyoto-su.ac.jp\r\n" + //送信元
-		"To: show04go@gmail.com\r\n" + //送信先
-		"Subject:あいさつ\r\n" +
-		"\r\n" + "hogeですhogehogeさんお元気ですか"
-	reader := strings.NewReader(msgStr)
-	transformer := japanese.ISO2022JP.NewEncoder()
-	msgISO2022JP, err := io.ReadAll(transform.NewReader(reader, transformer))
-	if err != nil {
-		log.Fatalf("Unable to convert to ISO2022JP: %v", err)
+
+	// Enable CORS for specific origins if needed
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+
+	// Handle preflight requests
+	if r.Method == http.MethodOptions {
+		w.WriteHeader(http.StatusOK)
+		return
 	}
-	msg := []byte(msgISO2022JP)
-	message := gmail.Message{}
-	message.Raw = base64.StdEncoding.EncodeToString(msg)
-	_, err = srv.Users.Messages.Send("me", &message).Do()
-	if err != nil {
-		fmt.Printf("%v", err)
+
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
 	}
+
+	var form ContactForm
+	err = json.NewDecoder(r.Body).Decode(&form)
+	if err != nil {
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	err = sendEmail(form.Email, form.Name, form.Message, srv)
+	if err != nil {
+		http.Error(w, "Failed to send email", http.StatusInternalServerError)
+		log.Println("Error sending email:", err)
+		return
+	}
+
+	fmt.Println("Received message from:", form.Email)
+	w.WriteHeader(http.StatusOK)
+	fmt.Fprintln(w, "Message received")
+}
+
+func main() {
+	loadEnv()
+
+	http.HandleFunc("/api/contact", contactHandler)
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+	fmt.Println("Server is running on port", port)
+	log.Fatal(http.ListenAndServe(":"+port, nil))
 }
