@@ -45,14 +45,23 @@ export default function Contact() {
     // フォームが有効な場合の処理
     if (validateName(nameField.value) && validateEmail(emailField.value) && validateMessage(messageField.value)) {
       setIsSubmitting(true);
-      
-      // 実際の実装ではここでAPIリクエストを行います
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      // 送信成功時の処理
-      setSubmitResult({ success: false, message: '現在工事中のため、お問い合せは受け付けておりません。🙇‍♂️' });
+
+      const response = await fetch('http://localhost:8080/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ name: nameField.value, email: emailField.value, message: messageField.value })
+      });
+
+      if (response.ok) {
+        setSubmitResult({ success: true, message: 'メッセージを送信しました。' });
+      } else {
+        setSubmitResult({ success: false, message: 'メッセージの送信に失敗しました。' });
+      }
+
       setIsSubmitting(false);
-      
+
       // フォームをリセット
       if (formRef.current) {
         formRef.current.reset();
