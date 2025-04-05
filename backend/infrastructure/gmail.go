@@ -24,7 +24,7 @@ func NewGmailClient(cfg *config.Config) (*gmail.Service, error) {
 		return nil, fmt.Errorf("unable to read client secret file: %v", err)
 	}
 
-	config, err := google.ConfigFromJSON(b, gmail.GmailSendScope)
+	config, err := google.ConfigFromJSON(b, gmail.MailGoogleComScope)
 	if err != nil {
 		return nil, fmt.Errorf("unable to parse client secret file to config: %v", err)
 	}
