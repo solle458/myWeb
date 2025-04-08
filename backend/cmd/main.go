@@ -5,6 +5,8 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"os/signal"
+	"syscall"
 
 	"backend/config"
 	"backend/infrastructure"
@@ -27,6 +29,12 @@ func main() {
 		log.Fatal("Error creating config:", err)
 	}
 
+	db, err := infrastructure.NewMySQLDB(cfg)
+	if err != nil {
+		log.Fatal("Error creating MySQL DB:", err)
+	}
+	defer infrastructure.CloseDB(db)
+
 	gmailClient, err := infrastructure.NewGmailClient(cfg)
 	if err != nil {
 		log.Fatal("Error creating Gmail client:", err)
@@ -38,10 +46,26 @@ func main() {
 	contactHandler := handler.NewContactHandler(contactUseCase)
 
 	http.HandleFunc("/api/contact", contactHandler.HandleContact)
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "8080"
+	http.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, "OK")
+	})
+	// http.HandleFunc("/api/admin/login", )
+	port := cfg.Port
+	server := &http.Server{
+		Addr: ":" + port,
 	}
-	fmt.Println("Server is running on port", port)
-	log.Fatal(http.ListenAndServe(":"+port, nil))
+
+	go func() {
+		fmt.Println("Server is running on port", port)
+		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			log.Fatal("Error starting server:", err)
+		}
+	}()
+
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+	<-quit
+
+	log.Println("Shutting down server...")
 }

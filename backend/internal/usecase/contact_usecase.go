@@ -8,6 +8,8 @@ import (
 
 type ContactUseCase interface {
 	HandleContactForm(form domain.Contact) error
+	GetContactById(id int64) (*domain.Contact, error)
+	GetAllContacts() ([]domain.Contact, error)
 }
 
 type contactUseCase struct {
@@ -34,4 +36,12 @@ func (u *contactUseCase) HandleContactForm(contact domain.Contact) error {
 	}
 
 	return nil
+}
+
+func (u *contactUseCase) GetContactById(id int64) (*domain.Contact, error) {
+	return u.contactRepo.GetContactById(id)
+}
+
+func (u *contactUseCase) GetAllContacts() ([]domain.Contact, error) {
+	return u.contactRepo.GetAllContacts()
 }

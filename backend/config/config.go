@@ -1,11 +1,27 @@
 package config
 
-import "os"
+import (
+	"os"
+	"strconv"
+)
 
 type Config struct {
-	Port            string
+	//Server Setting
+	Port string
+
+	//Email Setting
 	ToEmail         string
 	CredentialsPath string
+
+	//Database Setting
+	DBUser          string
+	DBHost          string
+	DBPort          string
+	DBName          string
+	DBPassword      string
+	MaxOpenConns    int
+	MaxIdleConns    int
+	ConnMaxLifetime int
 }
 
 func NewConfig() (*Config, error) {
@@ -14,9 +30,28 @@ func NewConfig() (*Config, error) {
 		port = "8080"
 	}
 
+	maxOpenConns, _ := strconv.Atoi(getEnvWithDefault("MAX_OPEN_CONNS", "10"))
+	maxIdleConns, _ := strconv.Atoi(getEnvWithDefault("MAX_IDLE_CONNS", "10"))
+	connMaxLifetime, _ := strconv.Atoi(getEnvWithDefault("CONN_MAX_LIFETIME", "10"))
+
 	return &Config{
 		Port:            port,
 		ToEmail:         os.Getenv("TO_EMAIL"),
 		CredentialsPath: "../config/credentials.json",
+		DBUser:          getEnvWithDefault("DB_USER", "root"),
+		DBPassword:      getEnvWithDefault("DB_PASSWORD", ""),
+		DBHost:          getEnvWithDefault("DB_HOST", "localhost"),
+		DBPort:          getEnvWithDefault("DB_PORT", "3306"),
+		DBName:          getEnvWithDefault("DB_NAME", "my_database"),
+		MaxOpenConns:    maxOpenConns,
+		MaxIdleConns:    maxIdleConns,
+		ConnMaxLifetime: connMaxLifetime,
 	}, nil
+}
+
+func getEnvWithDefault(key, defaultValue string) string {
+	if value := os.Getenv(key); value == "" {
+		return value
+	}
+	return defaultValue
 }
