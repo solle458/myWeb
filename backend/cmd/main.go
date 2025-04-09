@@ -40,7 +40,7 @@ func main() {
 		log.Fatal("Error creating Gmail client:", err)
 	}
 
-	contactRepository := repository.NewContactRepository()
+	contactRepository := repository.NewContactRepository(db)
 	emailService := service.NewEmailService(gmailClient, cfg)
 	contactUseCase := usecase.NewContactUseCase(contactRepository, emailService)
 	contactHandler := handler.NewContactHandler(contactUseCase)
