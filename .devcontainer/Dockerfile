@@ -12,5 +12,5 @@ FROM --platform=$BUILDPLATFORM golang:1.21-bullseye AS backend
 WORKDIR /app/backend
 COPY backend .
 
-RUN go mod tidy
+# RUN go mod tidy
 

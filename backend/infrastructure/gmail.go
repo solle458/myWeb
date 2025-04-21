@@ -42,9 +42,14 @@ func NewGmailClient(cfg *config.Config) (*gmail.Service, error) {
 }
 
 func getClient(config *oauth2.Config) *http.Client {
-	tokFile := "../config/token.json"
+	tokFile := "./config/token.json"
 	tok, err := tokenFromFile(tokFile)
 	if err != nil {
+		tok = getTokenFromWeb(config)
+		saveToken(tokFile, tok)
+	}
+	if !tok.Valid() {
+		log.Println("Token invalid, re-authenticating")
 		tok = getTokenFromWeb(config)
 		saveToken(tokFile, tok)
 	}

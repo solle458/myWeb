@@ -1,0 +1,59 @@
+# docker-compose.yml
+
+services:
+  mysql:
+    image: mysql:latest
+    container_name: myweb_mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "${DB_PORT}:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./db/migration:/docker-entrypoint-initdb.d
+    networks:
+      - myweb_network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${DB_ROOT_PASSWORD}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: myweb_backend
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+    ports:
+      - "${PORT}:8080"
+    env_file:
+      - backend/config/.env
+    environment:
+      - PORT=8080
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_MAX_OPEN_CONNS=10
+      - DB_MAX_IDLE_CONNS=5
+      - DB_CONN_MAX_LIFETIME=3600
+      - TO_EMAIL=${TO_EMAIL}
+    networks:
+      - myweb_network
+
+volumes:
+  mysql_data:
+    driver: local
+
+networks:
+  myweb_network:
+    driver: bridge

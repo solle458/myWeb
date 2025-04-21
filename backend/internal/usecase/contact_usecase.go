@@ -26,9 +26,9 @@ func NewContactUseCase(contactRepo repository.ContactRepository, emailService se
 
 func (u *contactUseCase) HandleContactForm(contact domain.Contact) error {
 	// Save contact to repository if needed
-	if err := u.contactRepo.SaveContact(contact); err != nil {
-		return err
-	}
+	// if err := u.contactRepo.SaveContact(contact); err != nil {
+	// 	return err
+	// }
 
 	// Send email notification
 	if err := u.emailService.SendContactEmail(contact); err != nil {

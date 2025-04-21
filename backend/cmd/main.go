@@ -19,9 +19,11 @@ import (
 )
 
 func main() {
-	err := godotenv.Load("../config/.env")
+	err := godotenv.Load("./config/.env") // パスを確認してください
 	if err != nil {
-		log.Fatal("Error loading .env file")
+		// .envがなくてもエラーにしない場合もある
+		log.Fatal("Warning: .env file not found or error loading it:", err)
+		// log.Fatal("Error loading .env file") // 必須の場合は Fatal
 	}
 
 	cfg, err := config.NewConfig()
@@ -57,7 +59,8 @@ func main() {
 	}
 
 	go func() {
-		fmt.Println("Server is running on port", port)
+		fmt.Println("Server is running on port", port) // fmt を使うか log を使うか統一すると良い
+		// log.Println("Server is running on port", port)
 		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			log.Fatal("Error starting server:", err)
 		}
@@ -68,4 +71,5 @@ func main() {
 	<-quit
 
 	log.Println("Shutting down server...")
+	// ここで Graceful Shutdown の処理を追加するのが一般的 (省略)
 }

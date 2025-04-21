@@ -6,7 +6,7 @@
 		// Sets the run context to one level up instead of the .devcontainer folder.
 		"context": "..",
 		// Update the 'dockerFile' property if you aren't using the standard 'Dockerfile' filename.
-		"dockerfile": "../Dockerfile"
+		"dockerfile": "./Dockerfile"
 	},
 	"features": {
 		"ghcr.io/devcontainers/features/git-lfs:1": {},
@@ -31,7 +31,10 @@
 				"ms-vscode.vscode-typescript-next",
 				"infeng.vscode-react-typescript",
 				"GitHub.copilot",
-				"GitHub.copilot-chat"
+				"GitHub.copilot-chat",
+				"ms-vscode.makefile-tools",
+				"zenor.makefile-creator",
+				"ansenhuang.vscode-view-readme"
 			]
 		}
 	}

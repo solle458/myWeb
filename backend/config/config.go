@@ -37,7 +37,7 @@ func NewConfig() (*Config, error) {
 	return &Config{
 		Port:            port,
 		ToEmail:         os.Getenv("TO_EMAIL"),
-		CredentialsPath: "../config/credentials.json",
+		CredentialsPath: "./config/credentials.json",
 		DBUser:          getEnvWithDefault("DB_USER", "root"),
 		DBPassword:      getEnvWithDefault("DB_PASSWORD", ""),
 		DBHost:          getEnvWithDefault("DB_HOST", "localhost"),
@@ -50,7 +50,7 @@ func NewConfig() (*Config, error) {
 }
 
 func getEnvWithDefault(key, defaultValue string) string {
-	if value := os.Getenv(key); value == "" {
+	if value := os.Getenv(key); value != "" {
 		return value
 	}
 	return defaultValue
