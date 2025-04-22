@@ -34,11 +34,19 @@ func NewConfig() (*Config, error) {
 	maxOpenConns, _ := strconv.Atoi(getEnvWithDefault("MAX_OPEN_CONNS", "10"))
 	maxIdleConns, _ := strconv.Atoi(getEnvWithDefault("MAX_IDLE_CONNS", "10"))
 	connMaxLifetime, _ := strconv.Atoi(getEnvWithDefault("CONN_MAX_LIFETIME", "10"))
+	creds := os.Getenv("GMAIL_CREDENTIALS_JSON")
+	if creds == "" {
+		panic("GMAIL_CREDENTIALS_JSON is not set")
+	}
+	err := os.WriteFile("./config/credentials.json", []byte(creds), 0600)
+	if err != nil {
+		panic("failed to write credentials.json: " + err.Error())
+	}
 
 	return &Config{
 		Port:            port,
 		ToEmail:         os.Getenv("TO_EMAIL"),
-		CredentialsPath: "../config/credentials.json",
+		CredentialsPath: "./config/credentials.json",
 		DBUser:          getEnvWithDefault("TIDB_USER", "root"),
 		DBPassword:      getEnvWithDefault("TIDB_PASSWORD", ""),
 		DBHost:          getEnvWithDefault("TIDB_HOST", "localhost"),
