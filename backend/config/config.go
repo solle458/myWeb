@@ -19,6 +19,7 @@ type Config struct {
 	DBPort          string
 	DBName          string
 	DBPassword      string
+	USE_SSL         string
 	MaxOpenConns    int
 	MaxIdleConns    int
 	ConnMaxLifetime int
@@ -37,12 +38,13 @@ func NewConfig() (*Config, error) {
 	return &Config{
 		Port:            port,
 		ToEmail:         os.Getenv("TO_EMAIL"),
-		CredentialsPath: "./config/credentials.json",
-		DBUser:          getEnvWithDefault("DB_USER", "root"),
-		DBPassword:      getEnvWithDefault("DB_PASSWORD", ""),
-		DBHost:          getEnvWithDefault("DB_HOST", "localhost"),
-		DBPort:          getEnvWithDefault("DB_PORT", "3306"),
-		DBName:          getEnvWithDefault("DB_NAME", "my_database"),
+		CredentialsPath: "../config/credentials.json",
+		DBUser:          getEnvWithDefault("TIDB_USER", "root"),
+		DBPassword:      getEnvWithDefault("TIDB_PASSWORD", ""),
+		DBHost:          getEnvWithDefault("TIDB_HOST", "localhost"),
+		DBPort:          getEnvWithDefault("TIDB_PORT", "3306"),
+		DBName:          getEnvWithDefault("TIDB_NAME", "my_database"),
+		USE_SSL:         getEnvWithDefault("USE_SSL", "false"),
 		MaxOpenConns:    maxOpenConns,
 		MaxIdleConns:    maxIdleConns,
 		ConnMaxLifetime: connMaxLifetime,

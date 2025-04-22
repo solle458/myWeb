@@ -1,12 +1,15 @@
 package infrastructure
 
 import (
+	"bufio"
 	"context"
 	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
+	"net/url"
 	"os"
+	"strings"
 
 	"backend/config"
 
@@ -42,7 +45,7 @@ func NewGmailClient(cfg *config.Config) (*gmail.Service, error) {
 }
 
 func getClient(config *oauth2.Config) *http.Client {
-	tokFile := "./config/token.json"
+	tokFile := "../config/token.json"
 	tok, err := tokenFromFile(tokFile)
 	if err != nil {
 		tok = getTokenFromWeb(config)
@@ -58,11 +61,20 @@ func getClient(config *oauth2.Config) *http.Client {
 
 func getTokenFromWeb(config *oauth2.Config) *oauth2.Token {
 	authURL := config.AuthCodeURL("state-token", oauth2.AccessTypeOffline)
-	fmt.Printf("Go to the following link in your browser then type the authorization code: \n%v\n", authURL)
+	fmt.Printf("Go to the following link in your browser then type the authorization code:\n%v\n", authURL)
 
-	var authCode string
-	if _, err := fmt.Scanln(&authCode); err != nil {
+	fmt.Print("Enter authorization code: ")
+	reader := bufio.NewReader(os.Stdin)
+	authCode, err := reader.ReadString('\n')
+	if err != nil {
 		log.Fatalf("Unable to read authorization code: %v", err)
+	}
+	authCode = strings.TrimSpace(authCode)
+
+	// ✨ URLデコードを追加！
+	authCode, err = url.QueryUnescape(authCode)
+	if err != nil {
+		log.Fatalf("Failed to decode auth code: %v", err)
 	}
 
 	tok, err := config.Exchange(context.Background(), authCode)

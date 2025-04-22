@@ -19,7 +19,7 @@ import (
 )
 
 func main() {
-	err := godotenv.Load("./config/.env") // パスを確認してください
+	err := godotenv.Load("../config/.env") // パスを確認してください
 	if err != nil {
 		// .envがなくてもエラーにしない場合もある
 		log.Fatal("Warning: .env file not found or error loading it:", err)
@@ -42,8 +42,8 @@ func main() {
 		log.Fatal("Error creating Gmail client:", err)
 	}
 
-	contactRepository := repository.NewContactRepository(db)
 	emailService := service.NewEmailService(gmailClient, cfg)
+	contactRepository := repository.NewContactRepository(db)
 	contactUseCase := usecase.NewContactUseCase(contactRepository, emailService)
 	contactHandler := handler.NewContactHandler(contactUseCase)
 
@@ -59,8 +59,7 @@ func main() {
 	}
 
 	go func() {
-		fmt.Println("Server is running on port", port) // fmt を使うか log を使うか統一すると良い
-		// log.Println("Server is running on port", port)
+		fmt.Println("Server is running on port", port)
 		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			log.Fatal("Error starting server:", err)
 		}

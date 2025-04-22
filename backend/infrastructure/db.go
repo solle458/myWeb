@@ -14,12 +14,13 @@ import (
 
 // NewMySQLDB establishes a connection to MySQL database with retry logic
 func NewMySQLDB(cfg *config.Config) (*sql.DB, error) {
-	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?parseTime=true&loc=Local",
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&tls=%s",
 		cfg.DBUser,
 		cfg.DBPassword,
 		cfg.DBHost,
 		cfg.DBPort,
 		cfg.DBName,
+		cfg.USE_SSL,
 	)
 
 	// Add retry logic for Docker environment

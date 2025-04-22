@@ -50,6 +50,7 @@ func (h *ContactHandler) createContact(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	w.Header().Set("Access-Control-Allow-Credentials", "true")
 
 	var contactForm domain.Contact
 	err := json.NewDecoder(r.Body).Decode(&contactForm)
