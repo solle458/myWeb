@@ -4,11 +4,13 @@ import (
 	"backend/internal/domain"
 	"backend/internal/repository"
 	"backend/internal/service"
+
+	"github.com/google/uuid"
 )
 
 type ContactUseCase interface {
 	HandleContactForm(form domain.Contact) error
-	GetContactById(id int64) (*domain.Contact, error)
+	GetContactById(id uuid.UUID) (*domain.Contact, error)
 	GetAllContacts() ([]domain.Contact, error)
 }
 
@@ -25,10 +27,15 @@ func NewContactUseCase(contactRepo repository.ContactRepository, emailService se
 }
 
 func (u *contactUseCase) HandleContactForm(contact domain.Contact) error {
-	// Save contact to repository if needed
-	// if err := u.contactRepo.SaveContact(contact); err != nil {
-	// 	return err
-	// }
+	// Generate UUID if not set
+	if contact.ID == "" {
+		contact.ID = uuid.New().String()
+	}
+
+	// Save contact to repository
+	if err := u.contactRepo.SaveContact(contact); err != nil {
+		return err
+	}
 
 	// Send email notification
 	if err := u.emailService.SendContactEmail(contact); err != nil {
@@ -38,7 +45,7 @@ func (u *contactUseCase) HandleContactForm(contact domain.Contact) error {
 	return nil
 }
 
-func (u *contactUseCase) GetContactById(id int64) (*domain.Contact, error) {
+func (u *contactUseCase) GetContactById(id uuid.UUID) (*domain.Contact, error) {
 	return u.contactRepo.GetContactById(id)
 }
 

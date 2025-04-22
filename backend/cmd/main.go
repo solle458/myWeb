@@ -14,17 +14,14 @@ import (
 	"backend/internal/repository"
 	"backend/internal/service"
 	"backend/internal/usecase"
-
-	"github.com/joho/godotenv"
 )
 
 func main() {
-	err := godotenv.Load("../config/.env") // パスを確認してください
-	if err != nil {
-		// .envがなくてもエラーにしない場合もある
-		log.Fatal("Warning: .env file not found or error loading it:", err)
-		// log.Fatal("Error loading .env file") // 必須の場合は Fatal
-	}
+	// ローカル環境での開発時に .env ファイルを読み込む
+	// err := godotenv.Load("../config/.env")
+	// if err != nil {
+	// 	log.Fatal("Warning: .env file not found or error loading it:", err)
+	// }
 
 	cfg, err := config.NewConfig()
 	if err != nil {

@@ -5,11 +5,12 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"strconv"
 	"strings"
 
 	"backend/internal/domain"
 	"backend/internal/usecase"
+
+	"github.com/google/uuid"
 )
 
 type ContactHandler struct {
@@ -27,11 +28,16 @@ func (h *ContactHandler) HandleContact(w http.ResponseWriter, r *http.Request) {
 	case http.MethodPost:
 		h.createContact(w, r)
 	case http.MethodGet:
-		if strings.Contains(r.URL.Path, "api/contacts") {
-			idStr := strings.TrimPrefix(r.URL.Path, "/api/contacts/")
-			id, err := strconv.ParseInt(idStr, 10, 64)
+		if strings.Contains(r.URL.Path, "/api/contact/") {
+			idStr := strings.TrimPrefix(r.URL.Path, "/api/contact/")
+			if idStr == "" || idStr == "api/contact" {
+				h.getAllContacts(w, r)
+				return
+			}
+
+			id, err := uuid.Parse(idStr)
 			if err != nil {
-				http.Error(w, "Invalid contact ID", http.StatusBadRequest)
+				http.Error(w, "Invalid contact ID: must be a valid UUID", http.StatusBadRequest)
 				return
 			}
 			h.getContactById(w, r, id)
@@ -59,6 +65,11 @@ func (h *ContactHandler) createContact(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Generate a new UUID if not provided in the request
+	if contactForm.ID == "" {
+		contactForm.ID = uuid.New().String()
+	}
+
 	err = h.contactUseCase.HandleContactForm(contactForm)
 	if err != nil {
 		http.Error(w, "Failed to process contact form", http.StatusInternalServerError)
@@ -69,10 +80,13 @@ func (h *ContactHandler) createContact(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Received message from:", contactForm.Email)
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(map[string]string{"message": "Message received"})
+	json.NewEncoder(w).Encode(map[string]string{
+		"message": "Message received",
+		"id":      contactForm.ID,
+	})
 }
 
-func (h *ContactHandler) getContactById(w http.ResponseWriter, r *http.Request, id int64) {
+func (h *ContactHandler) getContactById(w http.ResponseWriter, r *http.Request, id uuid.UUID) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")

@@ -30,7 +30,7 @@ export default function Projects() {
       id: 'project1',
       title: 'ポートフォリオウェブサイト',
       description: 'Next.jsとTailwind CSSを使用した個人ポートフォリオサイト。アニメーションとインタラクティブな要素を取り入れ、レスポンシブデザインを実装。',
-      image: '/images/mobile/dark4.JPG',
+      image: '/images/mobile/dark1.JPG',
       technologies: ['Next.js', 'React', 'TypeScript', 'Tailwind CSS'],
       url: 'https://solle.vercel.app/',
       github: 'https://github.com/solle458/myWeb/tree/main/frontend'

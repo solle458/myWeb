@@ -6,11 +6,13 @@ import (
 	"time"
 
 	"backend/internal/domain"
+
+	"github.com/google/uuid"
 )
 
 type ContactRepository interface {
 	SaveContact(contact domain.Contact) error
-	GetContactById(id int64) (*domain.Contact, error)
+	GetContactById(id uuid.UUID) (*domain.Contact, error)
 	GetAllContacts() ([]domain.Contact, error)
 }
 
@@ -25,30 +27,32 @@ func NewContactRepository(db *sql.DB) ContactRepository {
 }
 
 func (r *mySQLContactRepository) SaveContact(contact domain.Contact) error {
-	query := `INSERT INTO contacts (name, email, message, created_at) VALUES (?, ?, ?, ?)`
+	query := `INSERT INTO contacts (id, name, email, message, created_at) VALUES (?, ?, ?, ?, ?)`
 
-	result, err := r.db.Exec(query, contact.Name, contact.Email, contact.Message, time.Now())
+	// If ID is empty, generate a new one
+	if contact.ID == "" {
+		contact.ID = uuid.New().String()
+	}
+
+	now := time.Now()
+	_, err := r.db.Exec(query, contact.ID, contact.Name, contact.Email, contact.Message, now)
 	if err != nil {
 		return fmt.Errorf("failed to save contact: %w", err)
 	}
 
-	id, err := result.LastInsertId()
-	if err != nil {
-		return fmt.Errorf("failed to get last insert id: %w", err)
-	}
-
-	contact.ID = id
+	contact.CreatedAt = now
 	return nil
 }
 
-func (r *mySQLContactRepository) GetContactById(id int64) (*domain.Contact, error) {
+func (r *mySQLContactRepository) GetContactById(id uuid.UUID) (*domain.Contact, error) {
 	query := `SELECT id, name, email, message, created_at FROM contacts WHERE id = ?`
 
 	var contact domain.Contact
+	var idStr string
 	var createdAt time.Time
 
-	err := r.db.QueryRow(query, id).Scan(
-		&contact.ID,
+	err := r.db.QueryRow(query, id.String()).Scan(
+		&idStr,
 		&contact.Name,
 		&contact.Email,
 		&contact.Message,
@@ -59,6 +63,13 @@ func (r *mySQLContactRepository) GetContactById(id int64) (*domain.Contact, erro
 		return nil, fmt.Errorf("failed to get contact by id: %w", err)
 	}
 
+	// Parse UUID from string
+	contactID, err := uuid.Parse(idStr)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse contact UUID: %w", err)
+	}
+
+	contact.ID = contactID.String()
 	contact.CreatedAt = createdAt
 	return &contact, nil
 }
@@ -76,10 +87,11 @@ func (r *mySQLContactRepository) GetAllContacts() ([]domain.Contact, error) {
 
 	for rows.Next() {
 		var contact domain.Contact
+		var idStr string
 		var createdAt time.Time
 
 		if err := rows.Scan(
-			&contact.ID,
+			&idStr,
 			&contact.Name,
 			&contact.Email,
 			&contact.Message,
@@ -88,13 +100,19 @@ func (r *mySQLContactRepository) GetAllContacts() ([]domain.Contact, error) {
 			return nil, fmt.Errorf("failed to scan contact: %w", err)
 		}
 
-		contact.CreatedAt = createdAt
-		contacts = append(contacts, contact)
-
-		if err := rows.Err(); err != nil {
-			return nil, fmt.Errorf("failed to iterate over contacts: %w", err)
+		// Parse UUID from string
+		contactID, err := uuid.Parse(idStr)
+		if err != nil {
+			return nil, fmt.Errorf("failed to parse contact UUID: %w", err)
 		}
 
+		contact.ID = contactID.String()
+		contact.CreatedAt = createdAt
+		contacts = append(contacts, contact)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("failed to iterate over contacts: %w", err)
 	}
 
 	return contacts, nil
