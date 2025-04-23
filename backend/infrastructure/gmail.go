@@ -71,7 +71,6 @@ func getTokenFromWeb(config *oauth2.Config) *oauth2.Token {
 	}
 	authCode = strings.TrimSpace(authCode)
 
-	// ✨ URLデコードを追加！
 	authCode, err = url.QueryUnescape(authCode)
 	if err != nil {
 		log.Fatalf("Failed to decode auth code: %v", err)

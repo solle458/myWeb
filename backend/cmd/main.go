@@ -14,15 +14,42 @@ import (
 	"backend/internal/repository"
 	"backend/internal/service"
 	"backend/internal/usecase"
+
+	"github.com/joho/godotenv"
 )
 
-func main() {
-	// ローカル環境での開発時に .env ファイルを読み込む
-	// err := godotenv.Load("../config/.env")
-	// if err != nil {
-	// 	log.Fatal("Warning: .env file not found or error loading it:", err)
-	// }
+func initialize(local bool) {
+	if local {
+		// ローカル環境での開発時に .env ファイルを読み込む
+		err := godotenv.Load("./config/.env")
+		if err != nil {
+			log.Fatal("Warning: .env file not found or error loading it:", err)
+		}
+	} else {
+		// 本番環境では、GMAIL_CREDENTIALS_JSON 環境変数から JSON を取得し、ファイルに保存する
+		creds := os.Getenv("GMAIL_CREDENTIALS_JSON")
+		if creds == "" {
+			panic("GMAIL_CREDENTIALS_JSON is not set")
+		}
+		err := os.WriteFile("./config/credentials.json", []byte(creds), 0600)
+		if err != nil {
+			panic("failed to write credentials.json: " + err.Error())
+		}
+		// 本番環境では、GMAIL_TOKEN_JSON 環境変数から JSON を取得し、ファイルに保存する
+		tokenFile := os.Getenv("GMAIL_TOKEN_JSON")
+		if tokenFile == "" {
+			panic("GMAIL_TOKEN_JSON is not set")
+		}
+		err = os.WriteFile("./config/token.json", []byte(tokenFile), 0600)
+		if err != nil {
+			panic("failed to write token.json: " + err.Error())
+		}
+	}
+}
 
+func main() {
+	env := os.Getenv("ENV")
+	initialize(env == "local")
 	cfg, err := config.NewConfig()
 	if err != nil {
 		log.Fatal("Error creating config:", err)
