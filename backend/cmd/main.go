@@ -49,7 +49,7 @@ func initialize(local bool) {
 
 func main() {
 	env := os.Getenv("ENV")
-	initialize(env == "local")
+	initialize(env == "")
 	cfg, err := config.NewConfig()
 	if err != nil {
 		log.Fatal("Error creating config:", err)
