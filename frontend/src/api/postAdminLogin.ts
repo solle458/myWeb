@@ -11,7 +11,7 @@ export async function postAdminLogin(formData: FormData) {
         password: password
     }
 
-    const res = await axios.post('http://localhost:8080/api/admin/login', form)
+    const res = await axios.post('https://myweb-3jbr.onrender.com/api/admin/login', form)
 
     if (res.status === 200) {
         const cookieStore = await cookies()
