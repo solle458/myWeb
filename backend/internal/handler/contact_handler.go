@@ -24,6 +24,7 @@ func NewContactHandler(contactUseCase usecase.ContactUseCase) *ContactHandler {
 }
 
 func (h *ContactHandler) HandleContact(w http.ResponseWriter, r *http.Request) {
+	setHeader(w)
 	switch r.Method {
 	case http.MethodPost:
 		h.createContact(w, r)
@@ -51,13 +52,14 @@ func (h *ContactHandler) HandleContact(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (h *ContactHandler) createContact(w http.ResponseWriter, r *http.Request) {
-	//Enable CORS
-	w.Header().Set("Access-Control-Allow-Origin", "*")
+func setHeader(w http.ResponseWriter) {
+	w.Header().Set("Access-Control-Allow-Origin", "https://solle.vercel.app")
 	w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 	w.Header().Set("Access-Control-Allow-Credentials", "true")
+}
 
+func (h *ContactHandler) createContact(w http.ResponseWriter, r *http.Request) {
 	var contactForm domain.Contact
 	err := json.NewDecoder(r.Body).Decode(&contactForm)
 	if err != nil {
@@ -87,10 +89,6 @@ func (h *ContactHandler) createContact(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *ContactHandler) getContactById(w http.ResponseWriter, r *http.Request, id uuid.UUID) {
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-
 	contact, err := h.contactUseCase.GetContactById(id)
 	if err != nil {
 		http.Error(w, "Contact not found", http.StatusNotFound)
@@ -102,10 +100,6 @@ func (h *ContactHandler) getContactById(w http.ResponseWriter, r *http.Request, 
 }
 
 func (h *ContactHandler) getAllContacts(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
-
 	contacts, err := h.contactUseCase.GetAllContacts()
 	if err != nil {
 		http.Error(w, "Failed to get contacts", http.StatusInternalServerError)
