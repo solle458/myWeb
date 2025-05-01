@@ -20,10 +20,10 @@ type EmailService interface {
 
 type emailService struct {
 	gmailService *gmail.Service
-	config       *config.Config
+	config       *config.EmailConfig
 }
 
-func NewEmailService(gmailService *gmail.Service, config *config.Config) EmailService {
+func NewEmailService(gmailService *gmail.Service, config *config.EmailConfig) EmailService {
 	return &emailService{
 		gmailService: gmailService,
 		config:       config,

@@ -24,7 +24,7 @@ func NewContactHandler(contactUseCase usecase.ContactUseCase) *ContactHandler {
 }
 
 func (h *ContactHandler) HandleContact(w http.ResponseWriter, r *http.Request) {
-	setHeader(w)
+	h.setHeader(w)
 	switch r.Method {
 	case http.MethodPost:
 		h.createContact(w, r)
@@ -52,7 +52,7 @@ func (h *ContactHandler) HandleContact(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func setHeader(w http.ResponseWriter) {
+func (r *ContactHandler) setHeader(w http.ResponseWriter) {
 	w.Header().Set("Access-Control-Allow-Origin", "https://solle.vercel.app")
 	w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")

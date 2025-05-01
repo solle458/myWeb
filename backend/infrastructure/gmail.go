@@ -19,7 +19,7 @@ import (
 	"google.golang.org/api/option"
 )
 
-func NewGmailClient(cfg *config.Config) (*gmail.Service, error) {
+func NewGmailClient(cfg *config.EmailConfig) (*gmail.Service, error) {
 	ctx := context.Background()
 
 	b, err := os.ReadFile(cfg.CredentialsPath)

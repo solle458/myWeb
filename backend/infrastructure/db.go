@@ -13,7 +13,7 @@ import (
 )
 
 // NewMySQLDB establishes a connection to MySQL database with retry logic
-func NewMySQLDB(cfg *config.Config) (*sql.DB, error) {
+func NewMySQLDB(cfg *config.DBConfig) (*sql.DB, error) {
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&tls=%s",
 		cfg.DBUser,
 		cfg.DBPassword,

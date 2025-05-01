@@ -55,23 +55,47 @@ func main() {
 		log.Fatal("Error creating config:", err)
 	}
 
-	db, err := infrastructure.NewMySQLDB(cfg)
+	// Email
+	cfgEmail, err := config.NewEmailConfig()
+	if err != nil {
+		log.Fatal("Error creating config:", err)
+	}
+	gmailClient, err := infrastructure.NewGmailClient(cfgEmail)
+	if err != nil {
+		log.Fatal("Error creating Gmail client:", err)
+	}
+
+	// DB
+	cfgDB, err := config.NewDBConfig()
+	if err != nil {
+		log.Fatal("Error creating config:", err)
+	}
+	db, err := infrastructure.NewMySQLDB(cfgDB)
 	if err != nil {
 		log.Fatal("Error creating MySQL DB:", err)
 	}
 	defer infrastructure.CloseDB(db)
 
-	gmailClient, err := infrastructure.NewGmailClient(cfg)
+	cfgCloudinary, err := config.NewCloudinaryConfig()
 	if err != nil {
-		log.Fatal("Error creating Gmail client:", err)
+		log.Fatal("Error creating config:", err)
+	}
+	cld, err := infrastructure.NewCloudinary(cfgCloudinary)
+	if err != nil {
+		log.Fatal("Error creating Cloudinary client:", err)
 	}
 
-	emailService := service.NewEmailService(gmailClient, cfg)
+	emailService := service.NewEmailService(gmailClient, cfgEmail)
+	cloudinaryService := service.NewCloudinaryService(cld)
+	photoRepository := repository.NewPhotoRepository(db)
+	photoUseCase := usecase.NewPhotoUseCase(photoRepository, cloudinaryService)
+	photoHandler := handler.NewPhotoHandler(photoUseCase)
 	contactRepository := repository.NewContactRepository(db)
 	contactUseCase := usecase.NewContactUseCase(contactRepository, emailService)
 	contactHandler := handler.NewContactHandler(contactUseCase)
 
 	http.HandleFunc("/api/contact", contactHandler.HandleContact)
+	http.HandleFunc("/api/photo/", photoHandler.PhotoHandler)
 	http.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprintf(w, "OK")
