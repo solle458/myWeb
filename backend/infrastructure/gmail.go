@@ -10,6 +10,7 @@ import (
 	"net/url"
 	"os"
 	"strings"
+	"time"
 
 	"backend/config"
 
@@ -33,7 +34,7 @@ func NewGmailClient(cfg *config.EmailConfig) (*gmail.Service, error) {
 	}
 
 	// Get OAuth2 client
-	client := getClient(config)
+	client := getClient(ctx, config)
 
 	// Create Gmail service
 	srv, err := gmail.NewService(ctx, option.WithHTTPClient(client))
@@ -44,23 +45,43 @@ func NewGmailClient(cfg *config.EmailConfig) (*gmail.Service, error) {
 	return srv, nil
 }
 
-func getClient(config *oauth2.Config) *http.Client {
+func getClient(ctx context.Context, config *oauth2.Config) *http.Client {
 	tokFile := "./config/token.json"
 	tok, err := tokenFromFile(tokFile)
 	if err != nil {
 		tok = getTokenFromWeb(config)
 		saveToken(tokFile, tok)
 	}
-	if !tok.Valid() {
-		log.Println("Token invalid, re-authenticating")
-		tok = getTokenFromWeb(config)
-		saveToken(tokFile, tok)
+
+	// 有効期限が30分以内の場合、リフレッシュを試みる
+	if tok.Expiry.Before(time.Now().Add(30 * time.Minute)) {
+		// リフレッシュトークンがある場合は自動更新を試みる
+		if tok.RefreshToken != "" {
+			log.Println("Attempting to refresh the token")
+			tokenSource := config.TokenSource(ctx, tok)
+			newToken, err := tokenSource.Token()
+			if err != nil {
+				log.Printf("Token refresh failed: %v", err)
+				// リフレッシュに失敗した場合は再認証
+				tok = getTokenFromWeb(config)
+			} else {
+				tok = newToken
+				// 新しいトークンを保存
+				saveToken(tokFile, tok)
+			}
+		} else {
+			log.Println("No refresh token present, re-authenticating")
+			tok = getTokenFromWeb(config)
+			saveToken(tokFile, tok)
+		}
 	}
-	return config.Client(context.Background(), tok)
+
+	return config.Client(ctx, tok)
 }
 
 func getTokenFromWeb(config *oauth2.Config) *oauth2.Token {
-	authURL := config.AuthCodeURL("state-token", oauth2.AccessTypeOffline)
+	// ForceApprovalを追加してリフレッシュトークンを確実に取得
+	authURL := config.AuthCodeURL("state-token", oauth2.AccessTypeOffline, oauth2.ApprovalForce)
 	fmt.Printf("Go to the following link in your browser then type the authorization code:\n%v\n", authURL)
 
 	fmt.Print("Enter authorization code: ")
@@ -80,6 +101,14 @@ func getTokenFromWeb(config *oauth2.Config) *oauth2.Token {
 	if err != nil {
 		log.Fatalf("Unable to retrieve token from web: %v", err)
 	}
+
+	// リフレッシュトークンの有無を確認
+	if tok.RefreshToken == "" {
+		log.Println("Warning: No refresh token received. You may need to revoke access and try again.")
+	} else {
+		log.Println("Successfully received refresh token")
+	}
+
 	return tok
 }
 
