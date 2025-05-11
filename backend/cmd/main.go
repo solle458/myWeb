@@ -95,7 +95,8 @@ func main() {
 	contactHandler := handler.NewContactHandler(contactUseCase)
 
 	http.HandleFunc("/api/contact", contactHandler.HandleContact)
-	http.HandleFunc("/api/photo/", photoHandler.PhotoHandler)
+	http.HandleFunc("/api/photo/", photoHandler.HandlePhoto)
+	http.HandleFunc("/api/about", aboutHandler.HandleAbout)
 	http.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprintf(w, "OK")
