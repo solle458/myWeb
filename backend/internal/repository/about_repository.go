@@ -5,6 +5,8 @@ import (
 	"fmt"
 
 	"backend/internal/domain"
+
+	"github.com/google/uuid"
 )
 
 type AboutRepository interface {
@@ -61,31 +63,79 @@ func NewSkillsRepository(db *sql.DB) SkillsRepository {
 }
 
 func (r *mySQLAboutRepository) GetSkills() ([]domain.Skills, error) {
-	query := `SELECT languages, frameworks, others FROM skills`
+	query := `SELECT name, type FROM technologies`
 	rows, err := r.db.Query(query)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get skills: %w", err)
 	}
 	defer rows.Close()
 
-	var skills []domain.Skills
+	var languages []string
+	var frameworks []string
+	var others []string
+
 	for rows.Next() {
-		var skill domain.Skills
-		err := rows.Scan(&skill.Languages, &skill.Frameworks, &skill.Others)
-		if err != nil {
+		var name string
+		var typ string
+		if err := rows.Scan(&name, &typ); err != nil {
 			return nil, fmt.Errorf("failed to scan skill: %w", err)
 		}
-		skills = append(skills, skill)
-	}
 
-	return skills, nil
+		switch typ {
+		case "languages":
+			languages = append(languages, name)
+		case "frameworks":
+			frameworks = append(frameworks, name)
+		case "others":
+			others = append(others, name)
+		default:
+			return nil, fmt.Errorf("unknown skill type: %s", typ)
+		}
+	}
+	skills := domain.Skills{
+		Languages:  languages,
+		Frameworks: frameworks,
+		Others:     others,
+	}
+	return []domain.Skills{skills}, nil
 }
 
 func (r *mySQLAboutRepository) UpdateSkills(skill domain.Skills) error {
-	query := `UPDATE skills SET languages = ?, frameworks = ?, others = ?`
-	_, err := r.db.Exec(query, skill.Languages, skill.Frameworks, skill.Others)
+	tx, err := r.db.Begin()
 	if err != nil {
-		return fmt.Errorf("failed to update skills: %w", err)
+		return fmt.Errorf("failed to begin transaction: %w", err)
+	}
+	defer func() {
+		if err != nil {
+			tx.Rollback()
+		}
+	}()
+	_, err = tx.Exec(`DELETE FROM technologies`)
+	if err != nil {
+		return fmt.Errorf("failed to delete old skills: %w", err)
+	}
+	stmt, err := tx.Prepare(`INSERT INTO technologies (id, name, type) VALUES (?, ?, ?)`)
+	if err != nil {
+		return fmt.Errorf("failed to prepare insert: %w", err)
+	}
+	defer stmt.Close()
+	for _, name := range skill.Languages {
+		if _, err = stmt.Exec(uuid.New().String(), name, "languages"); err != nil {
+			return fmt.Errorf("failed to insert language skill: %w", err)
+		}
+	}
+	for _, name := range skill.Frameworks {
+		if _, err = stmt.Exec(uuid.New().String(), name, "frameworks"); err != nil {
+			return fmt.Errorf("failed to insert framework skill: %w", err)
+		}
+	}
+	for _, name := range skill.Others {
+		if _, err = stmt.Exec(uuid.New().String(), name, "others"); err != nil {
+			return fmt.Errorf("failed to insert other skill: %w", err)
+		}
+	}
+	if err = tx.Commit(); err != nil {
+		return fmt.Errorf("failed to commit transaction: %w", err)
 	}
 	return nil
 }
