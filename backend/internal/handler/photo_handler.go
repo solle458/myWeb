@@ -20,7 +20,7 @@ func NewPhotoHandler(photoUseCase usecase.PhotoUseCase) *PhotoHandler {
 	}
 }
 
-func (h *PhotoHandler) PhotoHandler(w http.ResponseWriter, r *http.Request) {
+func (h *PhotoHandler) HandlePhoto(w http.ResponseWriter, r *http.Request) {
 	h.setHeader(w)
 	err := r.ParseMultipartForm(10 << 20)
 	if err != nil {
