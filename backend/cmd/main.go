@@ -85,17 +85,30 @@ func main() {
 		log.Fatal("Error creating Cloudinary client:", err)
 	}
 
+	// service関連の初期化
 	emailService := service.NewEmailService(gmailClient, cfgEmail)
 	cloudinaryService := service.NewCloudinaryService(cld)
+
+	// Photo関連のリポジトリとユースケースを初期化
 	photoRepository := repository.NewPhotoRepository(db)
 	photoUseCase := usecase.NewPhotoUseCase(photoRepository, cloudinaryService)
 	photoHandler := handler.NewPhotoHandler(photoUseCase)
+
+	// Contact関連のリポジトリとユースケースを初期化
 	contactRepository := repository.NewContactRepository(db)
 	contactUseCase := usecase.NewContactUseCase(contactRepository, emailService)
 	contactHandler := handler.NewContactHandler(contactUseCase)
 
+	// About関連のリポジトリとユースケースを初期化
+	aboutRepository := repository.NewAboutRepository(db)
+	skillsRepository := repository.NewSkillsRepository(db)
+	educationRepository := repository.NewEducationRepository(db)
+	aboutUseCase := usecase.NewAboutUsecase(aboutRepository, skillsRepository, educationRepository)
+	aboutHandler := handler.NewAboutHandler(aboutUseCase)
+
+	// ルーティングの設定
 	http.HandleFunc("/api/contact", contactHandler.HandleContact)
-	http.HandleFunc("/api/photo/", photoHandler.HandlePhoto)
+	http.HandleFunc("/api/photo", photoHandler.HandlePhoto)
 	http.HandleFunc("/api/about", aboutHandler.HandleAbout)
 	http.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
@@ -119,5 +132,4 @@ func main() {
 	<-quit
 
 	log.Println("Shutting down server...")
-	// ここで Graceful Shutdown の処理を追加するのが一般的 (省略)
 }
