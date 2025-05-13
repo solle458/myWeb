@@ -14,6 +14,7 @@ export default function Projects() {
   
   // プロジェクトデータを取得
   const { projects, loading, error, refetch } = useProjects();
+  console.log("Fetched projects:", projects);
 
   // 装飾用画像
   const backgroundImage = "/images/pc/light4.JPG";

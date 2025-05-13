@@ -5,11 +5,11 @@ import axios from 'axios';
 export async function getProjects(): Promise<ProjectData[]> {
   try {
     // API URLの設定（環境変数から取得するとより良い）
-    const apiUrl = 'https://myweb-3jbr.onrender.com/api/';
+    const apiUrl = 'https://myweb-3jbr.onrender.com/api';
     
     // APIリクエスト
     const response = await axios.get(`${apiUrl}/projects`);
-    
+    console.log("API response:", response);
     // レスポンスが正常でない場合はエラーをスロー
     if (response.status < 200 || response.status >= 300) {
       throw new Error(`API error: ${response.status}`);
