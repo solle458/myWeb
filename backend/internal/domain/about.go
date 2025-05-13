@@ -11,7 +11,7 @@ type About struct {
 type Skills struct {
 	Languages  []string `json:"languages"`
 	Frameworks []string `json:"frameworks"`
-	Others     []string `json:"tools"`
+	Others     []string `json:"others"`
 }
 
 type Education struct {

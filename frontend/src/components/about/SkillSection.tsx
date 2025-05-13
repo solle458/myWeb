@@ -37,9 +37,13 @@ const SkillsSection = ({ skills, hoveredSection, setHoveredSection } : SkillsSec
             />
 
             <div className="flex flex-wrap gap-3">
-                {allSkills.map((skill, index) => (
-                    <SkillTag key={index} skill={skill} />
-                ))}
+                {allSkills.length > 0 ? (
+                    allSkills.map((skill, index) => (
+                        <SkillTag key={index} skill={skill} />
+                    ))
+                ) : (
+                    <p className="text-gray-500">スキルデータを読み込み中です...</p>
+                )}
             </div>
         </section>
     );

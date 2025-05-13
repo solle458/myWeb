@@ -19,11 +19,29 @@ export default function About() {
   }>({ languages: [], frameworks: [], others: [] });
 
   useEffect(() => {
-    getSkills().then((data) => {
-      setSkills(data);
-      // console.log("Skills fetched from API:");
-      // console.log(skills);
-    });
+    const fetchSkills = async () => {
+      try {
+        const data = await getSkills();
+        console.log("Fetched skills data:", data);
+        
+        // APIが配列を返す場合、最初の要素を取得
+        const skillsData = Array.isArray(data) ? data[0] : data;
+        
+        // データ構造を変換（toolsをothersに変換）
+        const formattedSkills = {
+          languages: Array.isArray(skillsData.languages) ? skillsData.languages : [],
+          frameworks: Array.isArray(skillsData.frameworks) ? skillsData.frameworks : [],
+          others: Array.isArray(skillsData.others) ? skillsData.others : []
+        };
+        
+        console.log("Formatted skills:", formattedSkills);
+        setSkills(formattedSkills);
+      } catch (error) {
+        console.error("Failed to fetch skills:", error);
+      }
+    };
+    
+    fetchSkills();
   }, []);
 
   const profile: ProfileData = {
@@ -86,7 +104,7 @@ export default function About() {
         />
         
         <SkillsSection 
-          skills={profile.skills} 
+          skills={skills} 
           hoveredSection={hoveredSection} 
           setHoveredSection={setHoveredSection} 
         />

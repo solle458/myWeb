@@ -70,9 +70,7 @@ func (r *mySQLAboutRepository) GetSkills() ([]domain.Skills, error) {
 	}
 	defer rows.Close()
 
-	var languages []string
-	var frameworks []string
-	var others []string
+	var skills []domain.Skills
 
 	for rows.Next() {
 		var name string
@@ -81,23 +79,20 @@ func (r *mySQLAboutRepository) GetSkills() ([]domain.Skills, error) {
 			return nil, fmt.Errorf("failed to scan skill: %w", err)
 		}
 
+		skill := domain.Skills{}
 		switch typ {
 		case "languages":
-			languages = append(languages, name)
+			skill.Languages = append(skill.Languages, name)
 		case "frameworks":
-			frameworks = append(frameworks, name)
+			skill.Frameworks = append(skill.Frameworks, name)
 		case "others":
-			others = append(others, name)
+			skill.Others = append(skill.Others, name)
 		default:
 			return nil, fmt.Errorf("unknown skill type: %s", typ)
 		}
+		skills = append(skills, skill)
 	}
-	skills := domain.Skills{
-		Languages:  languages,
-		Frameworks: frameworks,
-		Others:     others,
-	}
-	return []domain.Skills{skills}, nil
+	return skills, nil
 }
 
 func (r *mySQLAboutRepository) UpdateSkills(skill domain.Skills) error {
