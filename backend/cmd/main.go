@@ -106,10 +106,16 @@ func main() {
 	aboutUseCase := usecase.NewAboutUsecase(aboutRepository, skillsRepository, educationRepository)
 	aboutHandler := handler.NewAboutHandler(aboutUseCase)
 
+	// Project関連のリポジトリとユースケースを初期化
+	projectRepository := repository.NewProjectRepository(db)
+	projectUseCase := usecase.NewProjectUsecase(projectRepository)
+	projectHandler := handler.NewProjectHandler(projectUseCase)
+
 	// ルーティングの設定
 	http.HandleFunc("/api/contact", contactHandler.HandleContact)
-	http.HandleFunc("/api/photo", photoHandler.HandlePhoto)
-	http.HandleFunc("/api/about", aboutHandler.HandleAbout)
+	http.HandleFunc("/api/photo/", photoHandler.HandlePhoto)
+	http.HandleFunc("/api/about/", aboutHandler.HandleAbout)
+	http.HandleFunc("/api/projects/", projectHandler.HandleProject)
 	http.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprintf(w, "OK")
