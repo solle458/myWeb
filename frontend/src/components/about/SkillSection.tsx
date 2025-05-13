@@ -5,17 +5,22 @@ import SkillTag from './ui/SkillTag';
 
 interface SkillsSectionProps extends SectionProps {
     skills: {
-        languages: string[];
-        frameworks: string[];
-        others: string[];
+        languages?: string[];
+        frameworks?: string[];
+        others?: string[];
     };
 }
 
 const SkillsSection = ({ skills, hoveredSection, setHoveredSection } : SkillsSectionProps) => {
+    // 各カテゴリが存在し、配列であることを確認
+    const languages = Array.isArray(skills.languages) ? skills.languages : [];
+    const frameworks = Array.isArray(skills.frameworks) ? skills.frameworks : [];
+    const others = Array.isArray(skills.others) ? skills.others : [];
+    
     const allSkills = [
-        ...skills.languages,
-        ...skills.frameworks,
-        ...skills.others
+        ...languages,
+        ...frameworks,
+        ...others
     ].filter(Boolean);
 
     return (

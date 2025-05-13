@@ -21,6 +21,8 @@ export default function About() {
   useEffect(() => {
     getSkills().then((data) => {
       setSkills(data);
+      // console.log("Skills fetched from API:");
+      // console.log(skills);
     });
   }, []);
 
