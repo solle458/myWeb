@@ -22,20 +22,41 @@ export default function About() {
     const fetchSkills = async () => {
       try {
         const data = await getSkills();
-        console.log("Fetched skills data:", data);
+        // console.log("Fetched skills data:", data);
         
-        // APIが配列を返す場合、最初の要素を取得
-        const skillsData = Array.isArray(data) ? data[0] : data;
-        
-        // データ構造を変換（toolsをothersに変換）
-        const formattedSkills = {
-          languages: Array.isArray(skillsData.languages) ? skillsData.languages : [],
-          frameworks: Array.isArray(skillsData.frameworks) ? skillsData.frameworks : [],
-          others: Array.isArray(skillsData.others) ? skillsData.others : []
+        // Initialize categories
+        const skillsData: {
+          languages: string[];
+          frameworks: string[];
+          others: string[];
+        } = {
+          languages: [],
+          frameworks: [],
+          others: []
         };
         
-        console.log("Formatted skills:", formattedSkills);
-        setSkills(formattedSkills);
+        // Process each item in the data array
+        if (Array.isArray(data)) {
+          data.forEach((item) => {
+            // Check if the item has languages array
+            if (item.languages && Array.isArray(item.languages)) {
+              skillsData.languages.push(...item.languages);
+            }
+            
+            // Check if the item has frameworks array
+            if (item.frameworks && Array.isArray(item.frameworks)) {
+              skillsData.frameworks.push(...item.frameworks);
+            }
+            
+            // Check if the item has others array
+            if (item.others && Array.isArray(item.others)) {
+              skillsData.others.push(...item.others);
+            }
+          });
+        }
+        
+        console.log("Formatted skills:", skillsData);
+        setSkills(skillsData);
       } catch (error) {
         console.error("Failed to fetch skills:", error);
       }
