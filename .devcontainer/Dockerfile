@@ -7,7 +7,7 @@ COPY frontend .
 
 RUN npm install
 
-FROM --platform=$BUILDPLATFORM golang:1.21-bullseye AS backend
+FROM --platform=$BUILDPLATFORM golang:1.24-bullseye AS backend
 
 WORKDIR /app/backend
 COPY backend .
