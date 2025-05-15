@@ -3,6 +3,7 @@ package repository
 import (
 	"database/sql"
 	"fmt"
+	"strings"
 
 	"backend/internal/domain"
 
@@ -40,13 +41,45 @@ func (r *mySQLProjectRepository) GetProjects() ([]domain.Project, error) {
 	GROUP BY 
     	p.id;
 	`
-	row := r.db.QueryRow(query)
+	rows, err := r.db.Query(query)
+	if err != nil {
+		return nil, fmt.Errorf("failed to query projects: %w", err)
+	}
+	defer rows.Close()
 
 	var projects []domain.Project
-	err := row.Scan(&projects)
-	if err != nil {
-		return nil, fmt.Errorf("failed to get projects: %w", err)
+	for rows.Next() {
+		var p domain.Project
+		var techString sql.NullString // GROUP_CONCAT might return NULL if no technologies
+
+		err := rows.Scan(
+			&p.ID,
+			&p.Title,
+			&p.Description,
+			&p.Image,
+			&p.URL,
+			&p.Github,
+			&p.CreatedAt,
+			&techString,
+		)
+		if err != nil {
+			return nil, fmt.Errorf("failed to scan project: %w", err)
+		}
+
+		// Convert comma-separated technology string to slice
+		if techString.Valid && techString.String != "" {
+			p.Technology = strings.Split(techString.String, ",")
+		} else {
+			p.Technology = []string{} // Empty slice if no technologies
+		}
+
+		projects = append(projects, p)
 	}
+
+	if err = rows.Err(); err != nil {
+		return nil, fmt.Errorf("error iterating project rows: %w", err)
+	}
+
 	return projects, nil
 }
 
