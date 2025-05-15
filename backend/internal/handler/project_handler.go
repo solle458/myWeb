@@ -25,22 +25,20 @@ func (h *ProjectHandler) HandleProject(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
 	w.Header().Set("Access-Control-Allow-Credentials", "true")
+	fmt.Println("Request URL:", r.URL.Path)
+	fmt.Println("Request Method:", r.Method)
+	fmt.Println("Request Headers:", r.Header)
 	switch r.Method {
 	case http.MethodGet:
 		if strings.Contains(r.URL.Path, "/api/projects/") {
-			idStr := strings.TrimPrefix(r.URL.Path, "/api/projects/")
-			if idStr == "" || idStr == "api/projects" {
-				h.getProjects(w, r)
-				return
-			}
+			h.getProjects(w, r)
+			fmt.Println(w.Header())
+			return
 		}
 	case http.MethodPost:
 		if strings.Contains(r.URL.Path, "/api/projects/") {
-			idStr := strings.TrimPrefix(r.URL.Path, "/api/projects/")
-			if idStr == "" || idStr == "api/projects" {
-				h.createProject(w, r)
-				return
-			}
+			h.createProject(w, r)
+			return
 		}
 	case http.MethodPut:
 		if strings.Contains(r.URL.Path, "/api/projects/") {
@@ -60,6 +58,8 @@ func (h *ProjectHandler) HandleProject(w http.ResponseWriter, r *http.Request) {
 		}
 	case http.MethodOptions:
 		w.WriteHeader(http.StatusOK)
+		fmt.Println("Options request received")
+		fmt.Println(w.Header())
 	default:
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 	}
