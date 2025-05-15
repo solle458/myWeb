@@ -1,0 +1,16 @@
+{
+    "redirects": [
+      {
+        "source": "/(.*)",
+        "has": [
+          {
+            "type": "host",
+            "value": "solle.vercel.app"
+          }
+        ],
+        "destination": "https://www.solle458.com/:1",
+        "permanent": true
+      }
+    ]
+  }
+  
