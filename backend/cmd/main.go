@@ -115,7 +115,7 @@ func main() {
 	http.HandleFunc("/api/contact", contactHandler.HandleContact)
 	http.HandleFunc("/api/photo/", photoHandler.HandlePhoto)
 	http.HandleFunc("/api/about/", aboutHandler.HandleAbout)
-	http.HandleFunc("/api/projects/", projectHandler.HandleProject)
+	http.HandleFunc("/api/projects", projectHandler.HandleProject)
 	http.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprintf(w, "OK")

@@ -28,37 +28,26 @@ func (h *ProjectHandler) HandleProject(w http.ResponseWriter, r *http.Request) {
 	log.Println("Request Headers:", r.Header)
 	switch r.Method {
 	case http.MethodGet:
-		if strings.Contains(r.URL.Path, "/api/projects/") {
-			idStr := strings.TrimPrefix(r.URL.Path, "/api/projects/")
-			if idStr == "" || idStr == "api/projects" {
-				log.Println("Fetching all projects")
-				h.getProjects(w, r)
-				return
-			}
+		if strings.Contains(r.URL.Path, "/api/projects") {
+			log.Println("Fetching all projects")
+			h.getProjects(w, r)
+			w.WriteHeader(http.StatusOK)
+			return
 		}
 	case http.MethodPost:
-		if strings.Contains(r.URL.Path, "/api/projects/") {
-			idStr := strings.TrimPrefix(r.URL.Path, "/api/projects/")
-			if idStr == "" || idStr == "api/projects" {
-				h.createProject(w, r)
-				return
-			}
+		if strings.Contains(r.URL.Path, "/api/projects") {
+			h.createProject(w, r)
+			return
 		}
 	case http.MethodPut:
-		if strings.Contains(r.URL.Path, "/api/projects/") {
-			idStr := strings.TrimPrefix(r.URL.Path, "/api/projects/")
-			if idStr == "" || idStr == "api/projects" {
-				h.updateProject(w, r)
-				return
-			}
+		if strings.Contains(r.URL.Path, "/api/projects") {
+			h.updateProject(w, r)
+			return
 		}
 	case http.MethodDelete:
-		if strings.Contains(r.URL.Path, "/api/projects/") {
-			idStr := strings.TrimPrefix(r.URL.Path, "/api/projects/")
-			if idStr != "" && idStr != "api/projects" {
-				h.deleteProject(w, r)
-				return
-			}
+		if strings.Contains(r.URL.Path, "/api/projects") {
+			h.deleteProject(w, r)
+			return
 		}
 	case http.MethodOptions:
 		w.WriteHeader(http.StatusOK)
