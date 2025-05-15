@@ -8,6 +8,21 @@ const nextConfig: NextConfig = {
       allowedOrigins: ['*']
     }
   },
+  async redirects() {
+    return [
+      {
+        source: '/:path*',
+        has: [
+          {
+            type: 'host',
+            value: 'solle.vercel.app',
+          },
+        ],
+        destination: 'https://www.solle458.com/:path*',
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default nextConfig;
