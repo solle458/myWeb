@@ -7,6 +7,7 @@ import (
 
 type Config struct {
 	Port string
+	URL  string
 }
 
 type EmailConfig struct {
@@ -34,9 +35,11 @@ type CloudinaryConfig struct {
 
 func NewConfig() (*Config, error) {
 	port := getEnvWithDefault("PORT", "8080")
+	url := getEnvWithDefault("URL", "http://localhost:8080")
 
 	return &Config{
 		Port: port,
+		URL:  url,
 	}, nil
 }
 
