@@ -6,9 +6,9 @@ export async function getProjects(): Promise<ProjectData[]> {
   try {
     // APIリクエスト
     const url = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api') + '/projects';
-    console.log("API URL:", url);
+    // console.log("API URL:", url);
     const response = await axios.get(url);
-    console.log("API response:", response);
+    // console.log("API response:", response);
     // レスポンスが正常でない場合はエラーをスロー
     if (response.status < 200 || response.status >= 300) {
       throw new Error(`API error: ${response.status}`);
