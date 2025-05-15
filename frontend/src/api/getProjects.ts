@@ -1,40 +1,34 @@
 import { ProjectData, ProjectResponse } from '../types/projectTypes';
 import axios from 'axios';
 
-const apiClient = axios.create({
-  baseURL: 'https://myweb-3jbr.onrender.com',
-  headers: {
-    'Content-Type': 'application/json',
-  },
-  withCredentials: true,
-});
-
 // APIからプロジェクトデータを取得する関数
-export const getProjects = async () => {
+export async function getProjects(): Promise<ProjectData[]> {
   try {
-    const response = await apiClient.get('/api/projects');
-    return response.data;
-  } catch (error: unknown) {
-    console.error('Error fetching projects:', error);
-
-    // エラーがAxiosError型であるかを確認
-    if (axios.isAxiosError(error)) {
-      if (error.response) {
-        // サーバーからのレスポンスがある場合
-        console.error('Response data:', error.response.data);
-        console.error('Response status:', error.response.status);
-        console.error('Response headers:', error.response.headers);
-      } else if (error.request) {
-        // リクエストは送信されたがレスポンスがない場合
-        console.error('No response received:', error.request);
-      }
-    } else {
-      // その他のエラー
-      console.error('Error config:', (error as Error).message);
+    // API URLの設定（環境変数から取得するとより良い）
+    const apiUrl = 'https://myweb-3jbr.onrender.com/api';
+    
+    // APIリクエスト
+    const response = await axios.get(`${apiUrl}/projects`);
+    console.log("API response:", response);
+    // レスポンスが正常でない場合はエラーをスロー
+    if (response.status < 200 || response.status >= 300) {
+      throw new Error(`API error: ${response.status}`);
     }
+    
+    // レスポンスデータをパース
+    const result: ProjectResponse = response.data;
+    
+    // エラーチェック
+    if (!result.success) {
+      throw new Error(result.error || 'Unknown error');
+    }
+    
+    return result.data;
+  } catch (error) {
+    console.error('Failed to fetch projects:', error);
     throw error;
   }
-};
+}
 
 // フォールバック用のデモプロジェクトデータ
 export const fallbackProjects: ProjectData[] = [

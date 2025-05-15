@@ -36,7 +36,6 @@ export const useProjects = () => {
     fetchProjects();
   }, [isLoaded]);
 
-  // 再フェッチ関数
   const refetch = () => {
     setIsLoaded(false);
   };
