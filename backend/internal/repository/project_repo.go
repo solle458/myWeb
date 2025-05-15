@@ -29,12 +29,16 @@ func NewProjectRepository(db *sql.DB) ProjectRepository {
 
 func (r *mySQLProjectRepository) GetProjects() ([]domain.Project, error) {
 	query := `
-		SELECT p.id, p.title, p.description, p.image, p.url, p.github,
-    	GROUP_CONCAT(t.name ORDER BY t.name SEPARATOR '||') AS technologies
-		FROM projects p
-		LEFT JOIN project_technologies pt ON p.id = pt.project_id
-		LEFT JOIN technologies t ON pt.technology_id = t.id
-		GROUP BY p.id, p.title, p.description, p.image, p.url, p.github;
+	SELECT p.id, p.title, p.description, p.image, p.url, p.github, p.created_at,
+    GROUP_CONCAT(t.name) AS technology
+	FROM 
+    	projects p
+	LEFT JOIN 
+    	project_technologies pt ON p.id = pt.project_id
+	LEFT JOIN 
+    	technologies t ON pt.technology_id = t.id
+	GROUP BY 
+    	p.id;
 	`
 	row := r.db.QueryRow(query)
 
