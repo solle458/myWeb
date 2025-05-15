@@ -26,14 +26,15 @@ func (h *ProjectHandler) HandleProject(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
 	w.Header().Set("Access-Control-Allow-Credentials", "true")
-	log.Println("Request URL:", r.URL.Path)
-	log.Println("Request Method:", r.Method)
-	log.Println("Request Headers:", r.Header)
 	switch r.Method {
 	case http.MethodGet:
+		log.Println(r.URL.Path)
 		if strings.Contains(r.URL.Path, "/api/projects/") {
+			w.Header().Set("Access-Control-Allow-Origin", "https://www.solle458.com")
+			w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+			w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+			w.Header().Set("Access-Control-Allow-Credentials", "true")
 			h.getProjects(w, r)
-			log.Println(w.Header())
 			return
 		}
 	case http.MethodPost:
@@ -59,8 +60,6 @@ func (h *ProjectHandler) HandleProject(w http.ResponseWriter, r *http.Request) {
 		}
 	case http.MethodOptions:
 		w.WriteHeader(http.StatusOK)
-		log.Println("Options request received")
-		log.Println(w.Header())
 	default:
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 	}
@@ -73,6 +72,10 @@ func (h *ProjectHandler) getProjects(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	w.Header().Set("Access-Control-Allow-Origin", "https://www.solle458.com")
+	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+	w.Header().Set("Access-Control-Allow-Credentials", "true")
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(projects)
 }

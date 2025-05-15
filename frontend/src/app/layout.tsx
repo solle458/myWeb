@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Miyaki Shogo's Portfolio",
   description: "宮木笙伍のポートフォリオ",
-  viewport : "width=device-width",
+  // viewport : "width=device-width",
 };
 
 export default function RootLayout({
