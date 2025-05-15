@@ -21,7 +21,10 @@ func NewProjectHandler(projectHandler usecase.ProjectUsecase) *ProjectHandler {
 }
 
 func (h *ProjectHandler) HandleProject(w http.ResponseWriter, r *http.Request) {
-	h.setHeader(w)
+	w.Header().Set("Access-Control-Allow-Origin", "https://www.solle458.com")
+	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+	w.Header().Set("Access-Control-Allow-Credentials", "true")
 	switch r.Method {
 	case http.MethodGet:
 		if strings.Contains(r.URL.Path, "/api/projects/") {
@@ -119,11 +122,4 @@ func (h *ProjectHandler) deleteProject(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusNoContent)
-}
-
-func (h *ProjectHandler) setHeader(w http.ResponseWriter) {
-	w.Header().Set("Access-Control-Allow-Origin", "https://www.solle458.com")
-	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
-	w.Header().Set("Access-Control-Allow-Credentials", "true")
 }
