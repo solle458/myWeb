@@ -22,25 +22,27 @@ func NewProjectHandler(projectHandler usecase.ProjectUsecase) *ProjectHandler {
 }
 
 func (h *ProjectHandler) HandleProject(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Access-Control-Allow-Origin", "https://www.solle458.com")
-	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
-	w.Header().Set("Access-Control-Allow-Credentials", "true")
+	h.setHeader(w)
+	log.Println("Request URL:", r.URL.Path)
+	log.Println("Request Method:", r.Method)
+	log.Println("Request Headers:", r.Header)
 	switch r.Method {
 	case http.MethodGet:
-		log.Println(r.URL.Path)
 		if strings.Contains(r.URL.Path, "/api/projects/") {
-			w.Header().Set("Access-Control-Allow-Origin", "https://www.solle458.com")
-			w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
-			w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
-			w.Header().Set("Access-Control-Allow-Credentials", "true")
-			h.getProjects(w, r)
-			return
+			idStr := strings.TrimPrefix(r.URL.Path, "/api/projects/")
+			if idStr == "" || idStr == "api/projects" {
+				log.Println("Fetching all projects")
+				h.getProjects(w, r)
+				return
+			}
 		}
 	case http.MethodPost:
 		if strings.Contains(r.URL.Path, "/api/projects/") {
-			h.createProject(w, r)
-			return
+			idStr := strings.TrimPrefix(r.URL.Path, "/api/projects/")
+			if idStr == "" || idStr == "api/projects" {
+				h.createProject(w, r)
+				return
+			}
 		}
 	case http.MethodPut:
 		if strings.Contains(r.URL.Path, "/api/projects/") {
@@ -72,10 +74,6 @@ func (h *ProjectHandler) getProjects(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Header().Set("Access-Control-Allow-Origin", "https://www.solle458.com")
-	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
-	w.Header().Set("Access-Control-Allow-Credentials", "true")
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(projects)
 }
@@ -126,4 +124,11 @@ func (h *ProjectHandler) deleteProject(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusNoContent)
+}
+
+func (h *ProjectHandler) setHeader(w http.ResponseWriter) {
+	w.Header().Set("Access-Control-Allow-Origin", "https://www.solle458.com")
+	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+	w.Header().Set("Access-Control-Allow-Credentials", "true")
 }
