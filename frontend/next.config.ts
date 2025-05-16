@@ -2,10 +2,20 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   /* config options here */
-  experimental: {
+  images:{
+    domains: [
+      'images.unsplash.com',
+      'cdn.solle458.com',
+      'solle458.com',
+      'solle.vercel.app',
+      'cdn.discordapp.com',
+      'avatars.githubusercontent.com',
+      'github.com',
+      'res.cloudinary.com',
+    ],
+  },experimental: {
     serverActions: {
       bodySizeLimit: '2mb',
-      allowedOrigins: ['res.cloudinary.com'],
     }
   },
   async redirects() {
