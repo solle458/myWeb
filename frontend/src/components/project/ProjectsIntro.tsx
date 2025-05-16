@@ -23,9 +23,9 @@ const ProjectsIntro = () => {
                     プロジェクト
                 </h2>
                 <p className="text-gray-700 mb-8 leading-relaxed max-w-3xl">
-                    これまでに取り組んだプロジェクトの一部をご紹介します。
-                    普段は開発少なめです。
-                    Webアプリケーション、UIデザインなど。
+                    これまでに取り組んだプロジェクトの一部をご紹介します。<br/>
+                    普段は開発少なめです。<br/>
+                    バックエンド開発、Webアプリケーション、UIデザインなど。
                 </p>
             </div>
         </div>
