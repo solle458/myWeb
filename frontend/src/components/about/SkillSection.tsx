@@ -42,7 +42,7 @@ const SkillsSection = ({ skills, hoveredSection, setHoveredSection } : SkillsSec
                         <SkillTag key={index} skill={skill} />
                     ))
                 ) : (
-                    <p className="text-gray-500">スキルデータを読み込み中です...</p>
+                    <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-blue-500"></div>
                 )}
             </div>
         </section>
