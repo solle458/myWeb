@@ -46,7 +46,7 @@ export default function Contact() {
     if (validateName(nameField.value) && validateEmail(emailField.value) && validateMessage(messageField.value)) {
       setIsSubmitting(true);
 
-      const response = await fetch('https://myweb-3jbr.onrender.com/api/contact', {
+      const response = await fetch('https://api.solle458.com/api/contact', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

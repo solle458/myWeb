@@ -24,7 +24,7 @@ func NewContactHandler(contactUseCase usecase.ContactUseCase) *ContactHandler {
 }
 
 func (h *ContactHandler) HandleContact(w http.ResponseWriter, r *http.Request) {
-	h.setHeader(w)
+	h.setHeader(w, r)
 	switch r.Method {
 	case http.MethodPost:
 		h.createContact(w, r)
@@ -52,8 +52,17 @@ func (h *ContactHandler) HandleContact(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (r *ContactHandler) setHeader(w http.ResponseWriter) {
-	w.Header().Set("Access-Control-Allow-Origin", "https://solle.vercel.app")
+func (r *ContactHandler) setHeader(w http.ResponseWriter, req *http.Request) {
+	allowedOrigins := []string{"https://solle.vercel.app", "https://www.solle458.com"}
+	origin := req.Header.Get("Origin")
+
+	for _, allowedOrigin := range allowedOrigins {
+		if origin == allowedOrigin {
+			w.Header().Set("Access-Control-Allow-Origin", origin)
+			break
+		}
+	}
+
 	w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 	w.Header().Set("Access-Control-Allow-Credentials", "true")

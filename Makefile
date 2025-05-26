@@ -50,11 +50,6 @@ setup:
 	[ -f .env ] || cp .env-template .env
 	@echo "Please edit .env file with your configuration"
 
-# Run database migrations manually if needed
-.PHONY: migrate
-migrate:
-	$(DC) exec mysql mysql -u$(shell grep DB_USER .env | cut -d= -f2) -p$(shell grep DB_PASSWORD .env | cut -d= -f2) $(shell grep DB_NAME .env | cut -d= -f2) < ./db/migration/001_create_contacts.sql
-
 # Build and start everything
 .PHONY: start
 start: setup build up
